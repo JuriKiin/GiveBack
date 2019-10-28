@@ -48,7 +48,7 @@ const deleteDomo = (request, response) => {
   const res = response;
   console.log(req.body);
 
-  return Domo.DomoModel.findByOwner(req.body.)
+  //return Domo.DomoModel.findByOwner(req.body.)
 };
 
 module.exports.makerPage = makerPage;
