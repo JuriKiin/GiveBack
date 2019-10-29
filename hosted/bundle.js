@@ -1,6 +1,4 @@
-'use strict';
-
-var handleDomo = function handleDomo(e) {
+const handleDomo = e => {
     e.preventDefault();
     $('#domoMessage').animate({ width: 'hide' }, 350);
     if ($('#domoName').val() == '' || $('#domoAge').val() == '' || $('#domoGold').val() == '') {
@@ -13,7 +11,7 @@ var handleDomo = function handleDomo(e) {
     return false;
 };
 
-var DomoForm = function DomoForm(props) {
+const DomoForm = props => {
     return React.createElement(
         'form',
         { id: 'domoForm', name: 'domoForm',
@@ -45,7 +43,7 @@ var DomoForm = function DomoForm(props) {
     );
 };
 
-var DomoList = function DomoList(props) {
+const DomoList = function (props) {
     if (props.domos.length === 0) {
         return React.createElement(
             'div',
@@ -57,7 +55,7 @@ var DomoList = function DomoList(props) {
             )
         );
     }
-    var domoNodes = props.domos.map(function (domo) {
+    const domoNodes = props.domos.map(function (domo) {
         return React.createElement(
             'div',
             { key: domo._id, className: 'domo' },
@@ -94,27 +92,27 @@ var DomoList = function DomoList(props) {
     );
 };
 
-var deleteDomo = function deleteDomo(domo) {
+const deleteDomo = domo => {
     sendAjax('POST', '/delete', domo, function () {
         loadDomosFromServer();
     });
 };
 
-var loadDomosFromServer = function loadDomosFromServer() {
-    sendAjax('GET', '/getDomos', null, function (data) {
+const loadDomosFromServer = () => {
+    sendAjax('GET', '/getDomos', null, data => {
         console.log(data);
         ReactDOM.render(React.createElement(DomoList, { domos: data.domos }), document.querySelector('#domos'));
     });
 };
 
-var setup = function setup(csrf) {
+const setup = function (csrf) {
     ReactDOM.render(React.createElement(DomoForm, { csrf: csrf }), document.querySelector('#makeDomo'));
     ReactDOM.render(React.createElement(DomoList, { domos: [] }), document.querySelector('#domos'));
     loadDomosFromServer();
 };
 
-var getToken = function getToken() {
-    sendAjax('GET', '/getToken', null, function (result) {
+const getToken = () => {
+    sendAjax('GET', '/getToken', null, result => {
         setup(result.csrfToken);
     });
 };
@@ -122,19 +120,17 @@ var getToken = function getToken() {
 $(document).ready(function () {
     getToken();
 });
-'use strict';
-
-var handleError = function handleError(message) {
+const handleError = message => {
     $('#errorMessage').text(message);
     $('#domoMessage').animate({ width: 'toggle' }, 350);
 };
 
-var redirect = function redirect(response) {
+const redirect = response => {
     $('#domoMessage').animate({ width: 'hide' }, 350);
     window.location = response.redirect;
 };
 
-var sendAjax = function sendAjax(type, action, data, success) {
+const sendAjax = (type, action, data, success) => {
     $.ajax({
         cache: false,
         type: type,
@@ -142,8 +138,8 @@ var sendAjax = function sendAjax(type, action, data, success) {
         data: data,
         dataType: 'json',
         success: success,
-        error: function error(xhr, status, _error) {
-            var messageObj = JSON.parse(xhr.responseText);
+        error: function (xhr, status, error) {
+            let messageObj = JSON.parse(xhr.responseText);
             handleError(messageObj.error);
         }
     });

@@ -1,6 +1,4 @@
-'use strict';
-
-var handleLogin = function handleLogin(e) {
+const handleLogin = e => {
     e.preventDefault();
 
     $('#domoMessage').animate({ width: 'hide' }, 350);
@@ -13,7 +11,7 @@ var handleLogin = function handleLogin(e) {
     return false;
 };
 
-var handleSignup = function handleSignup(e) {
+const handleSignup = e => {
     e.preventDefault();
     $('#domoMessage').animate({ width: 'hide' }, 350);
     if ($('#user').val() == '' || $('#pass').val() == '' || $('#pass2').val() == '') {
@@ -28,7 +26,7 @@ var handleSignup = function handleSignup(e) {
     return false;
 };
 
-var LoginWindow = function LoginWindow(props) {
+const LoginWindow = props => {
     return React.createElement(
         'form',
         { id: 'loginForm', name: 'loginForm',
@@ -38,23 +36,18 @@ var LoginWindow = function LoginWindow(props) {
             className: 'mainForm'
         },
         React.createElement(
-            'label',
-            { htmlFor: 'username' },
-            'Username: '
+            'h1',
+            null,
+            'Hello Again.'
         ),
-        React.createElement('input', { id: 'user', type: 'text', name: 'username', placeholder: 'username' }),
-        React.createElement(
-            'label',
-            { htmlFor: 'pass' },
-            'Password: '
-        ),
-        React.createElement('input', { id: 'pass', type: 'password', name: 'pass', placeholder: 'password' }),
+        React.createElement('input', { id: 'user', type: 'text', name: 'username', placeholder: 'Username' }),
+        React.createElement('input', { id: 'pass', type: 'password', name: 'pass', placeholder: 'Password' }),
         React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-        React.createElement('input', { className: 'formSubmit', type: 'submit', value: 'Sign In' })
+        React.createElement('input', { className: 'formSubmit', type: 'submit', value: 'Log In' })
     );
 };
 
-var SignUpWindow = function SignUpWindow(props) {
+const SignUpWindow = props => {
     return React.createElement(
         'form',
         { id: 'signupForm', name: 'signupForm',
@@ -64,57 +57,40 @@ var SignUpWindow = function SignUpWindow(props) {
             className: 'mainForm'
         },
         React.createElement(
-            'label',
-            { htmlFor: 'username' },
-            'Username: '
+            'h1',
+            null,
+            'Let\'s Get Started.'
         ),
-        React.createElement('input', { id: 'user', type: 'text', name: 'username', placeholder: 'username' }),
-        React.createElement(
-            'label',
-            { htmlFor: 'pass' },
-            'Password: '
-        ),
-        React.createElement('input', { id: 'pass', type: 'password', name: 'pass', placeholder: 'password' }),
-        React.createElement(
-            'label',
-            { htmlFor: 'pass2' },
-            'Password: '
-        ),
-        React.createElement('input', { id: 'pass2', type: 'password', name: 'pass2', placeholder: 'retype password' }),
+        React.createElement('input', { id: 'user', type: 'text', name: 'username', placeholder: 'Username' }),
+        React.createElement('input', { id: 'pass', type: 'password', name: 'pass', placeholder: 'Password' }),
+        React.createElement('input', { id: 'pass2', type: 'password', name: 'pass2', placeholder: 'Retype password' }),
         React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-        React.createElement('input', { className: 'formSubmit', type: 'submit', value: 'Sign In' })
+        React.createElement('input', { className: 'formSubmit', type: 'submit', value: 'Create Account' })
     );
 };
 
-var createLoginWindow = function createLoginWindow(csrf) {
+const createLoginWindow = csrf => {
     ReactDOM.render(React.createElement(LoginWindow, { csrf: csrf }), document.querySelector('#content'));
 };
 
-var createSignupWindow = function createSignupWindow(csrf) {
+const createSignupWindow = csrf => {
     ReactDOM.render(React.createElement(SignUpWindow, { csrf: csrf }), document.querySelector('#content'));
 };
 
-var setup = function setup(csrf) {
-    var loginButton = document.querySelector('#loginButton');
-    var signupButton = document.querySelector('#signupButton');
+const setup = csrf => {
+    const loginButton = document.querySelector('#login-button');
 
-    signupButton.addEventListener('click', function (e) {
-        e.preventDefault();
-        createSignupWindow(csrf);
-        return false;
-    });
-
-    loginButton.addEventListener('click', function (e) {
+    loginButton.addEventListener('click', e => {
         e.preventDefault();
         createLoginWindow(csrf);
         return false;
     });
 
-    createLoginWindow(csrf);
+    createSignupWindow(csrf);
 };
 
-var getToken = function getToken() {
-    sendAjax('GET', '/getToken', null, function (result) {
+const getToken = () => {
+    sendAjax('GET', '/getToken', null, result => {
         setup(result.csrfToken);
     });
 };
@@ -122,19 +98,17 @@ var getToken = function getToken() {
 $(document).ready(function () {
     getToken();
 });
-'use strict';
-
-var handleError = function handleError(message) {
+const handleError = message => {
     $('#errorMessage').text(message);
     $('#domoMessage').animate({ width: 'toggle' }, 350);
 };
 
-var redirect = function redirect(response) {
+const redirect = response => {
     $('#domoMessage').animate({ width: 'hide' }, 350);
     window.location = response.redirect;
 };
 
-var sendAjax = function sendAjax(type, action, data, success) {
+const sendAjax = (type, action, data, success) => {
     $.ajax({
         cache: false,
         type: type,
@@ -142,8 +116,8 @@ var sendAjax = function sendAjax(type, action, data, success) {
         data: data,
         dataType: 'json',
         success: success,
-        error: function error(xhr, status, _error) {
-            var messageObj = JSON.parse(xhr.responseText);
+        error: function (xhr, status, error) {
+            let messageObj = JSON.parse(xhr.responseText);
             handleError(messageObj.error);
         }
     });

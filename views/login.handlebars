@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <title>DomoMaker</title>
+  <title>Give Back</title>
   <script crossorigin src="https://unpkg.com/react@15/dist/react.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
   <script crossorigin src="https://unpkg.com/prop-types/prop-types.min.js"></script>
@@ -9,17 +9,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
   <link rel="shortcut icon" href="/assets/img/favicon.png"/>
+  <link rel="stylesheet" href="https://jurikiin.com/KiinStyles/css/kiinStyle.css">
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
 <body> 
-  <nav><a href="/login"><img id="logo" src="/assets/img/face.png" alt="face logo"/></a>
-    <div class="navlink"><a id="loginButton" href="/login">Login</a></div>
-    <div class="navlink"><a id="signupButton" href="/signup">Sign up</a></div>
-  </nav>
-  <section id="content"></section>
-  <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="errorMessage">Wrong username or password</span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
+  <div>
+    <img class='app-logo margin-left-5 f-left' src='/assets/img/logo.png' alt='App logo' />
+    <div class='f-right margin-top-5 margin-right-5'>
+      <p class='nav-item font-md'><a href='/about'>About</a></p>
+      <p class='nav-item font-md' id='login-button'><a id='login-link' href='/login'>Login</a></p>
+    </div>
   </div>
+
+  <section id="content"></section>
+  <p class='footer fixed font-text'>&copy; 2019 | Juri Kiin</p>
   <script src="/assets/loginBundle.js"></script>
 </body>
 </html>

@@ -34,12 +34,11 @@ const LoginWindow = (props) => {
             method="POST"
             className="mainForm"
         >
-        <label htmlFor="username">Username: </label>
-        <input id="user" type="text" name="username" placeholder="username" />
-        <label htmlFor="pass">Password: </label>
-        <input id="pass" type="password" name="pass" placeholder="password" />
+        <h1>Hello Again.</h1>
+        <input id="user" type="text" name="username" placeholder="Username" />
+        <input id="pass" type="password" name="pass" placeholder="Password" />
         <input type="hidden" name="_csrf" value={props.csrf} />
-        <input className="formSubmit" type="submit" value="Sign In" />
+        <input className="formSubmit" type="submit" value="Log In" />
     </form>
     );
 };
@@ -52,14 +51,12 @@ const SignUpWindow = (props) => {
             method="POST"
             className="mainForm"
         >
-        <label htmlFor="username">Username: </label>
-        <input id="user" type="text" name="username" placeholder="username" />
-        <label htmlFor="pass">Password: </label>
-        <input id="pass" type="password" name="pass" placeholder="password" />
-        <label htmlFor="pass2">Password: </label>
-        <input id="pass2" type="password" name="pass2" placeholder="retype password" />
+        <h1>Let's Get Started.</h1>
+        <input id="user" type="text" name="username" placeholder="Username" />
+        <input id="pass" type="password" name="pass" placeholder="Password" />
+        <input id="pass2" type="password" name="pass2" placeholder="Retype password" />
         <input type="hidden" name="_csrf" value={props.csrf} />
-        <input className="formSubmit" type="submit" value="Sign In" />
+        <input className="formSubmit" type="submit" value="Create Account" />
     </form>
     );
 };
@@ -79,14 +76,7 @@ const createSignupWindow = (csrf) => {
 };
 
 const setup = (csrf) => {
-    const loginButton = document.querySelector('#loginButton');
-    const signupButton = document.querySelector('#signupButton');
-
-    signupButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        createSignupWindow(csrf);
-        return false;
-    });
+    const loginButton = document.querySelector('#login-button');
 
     loginButton.addEventListener('click', (e) => {
         e.preventDefault();
@@ -94,7 +84,7 @@ const setup = (csrf) => {
         return false;
     });
 
-    createLoginWindow(csrf);
+    createSignupWindow(csrf);
 };
 
 const getToken = () => {
