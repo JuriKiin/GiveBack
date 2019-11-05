@@ -1,25 +1,22 @@
 const handleLogin = (e) => {
     e.preventDefault();
 
-    $('#domoMessage').animate({width: 'hide'}, 350);
     if($("#user").val() == '' || $('#pass').val() == '') {
-        handleError("RAWR! Username or password is empty");
+        showToast("Username or password is empty");
         return false;
     }
-    console.log($('input[name=_csrf').val());
     sendAjax('POST', $('#loginForm').attr("action"), $('#loginForm').serialize(), redirect);
     return false;
 };
 
 const handleSignup = (e) => {
     e.preventDefault();
-    $('#domoMessage').animate({width: 'hide'}, 350);
     if($('#user').val() == '' || $('#pass').val() == '' || $('#pass2').val() == '') {
-        handleError("RAWR! All fields are required");
+        showToast("All fields are required");
         return false;
     }
     if($('#pass').val() !== $('#pass2').val()) {
-        handleError("RAWR! Passwords do not match");
+        showToast("Passwords do not match");
         return false;
     }
     sendAjax('POST', $('#signupForm').attr("action"), $('#signupForm').serialize(), redirect);
@@ -27,6 +24,8 @@ const handleSignup = (e) => {
 };
 
 const LoginWindow = (props) => {
+    document.getElementById("login-link").innerHTML = "Sign Up";
+    document.getElementById("login-link").setAttribute('href', '/signup');
     return (
     <form id="loginForm" name="loginForm"
             onSubmit={handleLogin}
@@ -44,6 +43,8 @@ const LoginWindow = (props) => {
 };
 
 const SignUpWindow = (props) => {
+    document.getElementById("login-link").innerHTML = "Login";
+    document.getElementById("login-link").setAttribute('href', '/login');
     return (
     <form id="signupForm" name="signupForm"
             onSubmit={handleSignup}
@@ -80,7 +81,11 @@ const setup = (csrf) => {
 
     loginButton.addEventListener('click', (e) => {
         e.preventDefault();
-        createLoginWindow(csrf);
+        if(document.getElementById('login-link').getAttribute('href') === '/login') {
+            createLoginWindow(csrf);
+        } else {
+            createSignupWindow(csrf);
+        }
         return false;
     });
 

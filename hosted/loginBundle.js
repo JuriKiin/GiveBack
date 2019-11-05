@@ -1,25 +1,22 @@
 const handleLogin = e => {
     e.preventDefault();
 
-    $('#domoMessage').animate({ width: 'hide' }, 350);
     if ($("#user").val() == '' || $('#pass').val() == '') {
-        handleError("RAWR! Username or password is empty");
+        showToast("Username or password is empty");
         return false;
     }
-    console.log($('input[name=_csrf').val());
     sendAjax('POST', $('#loginForm').attr("action"), $('#loginForm').serialize(), redirect);
     return false;
 };
 
 const handleSignup = e => {
     e.preventDefault();
-    $('#domoMessage').animate({ width: 'hide' }, 350);
     if ($('#user').val() == '' || $('#pass').val() == '' || $('#pass2').val() == '') {
-        handleError("RAWR! All fields are required");
+        showToast("All fields are required");
         return false;
     }
     if ($('#pass').val() !== $('#pass2').val()) {
-        handleError("RAWR! Passwords do not match");
+        showToast("Passwords do not match");
         return false;
     }
     sendAjax('POST', $('#signupForm').attr("action"), $('#signupForm').serialize(), redirect);
@@ -27,6 +24,8 @@ const handleSignup = e => {
 };
 
 const LoginWindow = props => {
+    document.getElementById("login-link").innerHTML = "Sign Up";
+    document.getElementById("login-link").setAttribute('href', '/signup');
     return React.createElement(
         'form',
         { id: 'loginForm', name: 'loginForm',
@@ -48,6 +47,8 @@ const LoginWindow = props => {
 };
 
 const SignUpWindow = props => {
+    document.getElementById("login-link").innerHTML = "Login";
+    document.getElementById("login-link").setAttribute('href', '/login');
     return React.createElement(
         'form',
         { id: 'signupForm', name: 'signupForm',
@@ -82,7 +83,11 @@ const setup = csrf => {
 
     loginButton.addEventListener('click', e => {
         e.preventDefault();
-        createLoginWindow(csrf);
+        if (document.getElementById('login-link').getAttribute('href') === '/login') {
+            createLoginWindow(csrf);
+        } else {
+            createSignupWindow(csrf);
+        }
         return false;
     });
 
@@ -99,12 +104,10 @@ $(document).ready(function () {
     getToken();
 });
 const handleError = message => {
-    $('#errorMessage').text(message);
-    $('#domoMessage').animate({ width: 'toggle' }, 350);
+    console.log(message);
 };
 
 const redirect = response => {
-    $('#domoMessage').animate({ width: 'hide' }, 350);
     window.location = response.redirect;
 };
 
@@ -118,7 +121,16 @@ const sendAjax = (type, action, data, success) => {
         success: success,
         error: function (xhr, status, error) {
             let messageObj = JSON.parse(xhr.responseText);
-            handleError(messageObj.error);
+            showToast(messageObj.error);
         }
     });
+};
+
+const showToast = message => {
+    let toast = document.getElementById("snackbar");
+    toast.innerHTML = message;
+    toast.className = "show";
+    setTimeout(function () {
+        toast.className = toast.className.replace("show", "");
+    }, 3000);
 };

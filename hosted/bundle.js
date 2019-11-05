@@ -1,114 +1,100 @@
-const handleDomo = e => {
-    e.preventDefault();
-    $('#domoMessage').animate({ width: 'hide' }, 350);
-    if ($('#domoName').val() == '' || $('#domoAge').val() == '' || $('#domoGold').val() == '') {
-        handleError("RAWR! All fields are required");
-        return false;
-    }
-    sendAjax('POST', $('#domoForm').attr('action'), $('#domoForm').serialize(), function () {
-        loadDomosFromServer();
-    });
-    return false;
-};
+var _this = this;
 
-const DomoForm = props => {
+const Greeting = props => {
     return React.createElement(
-        'form',
-        { id: 'domoForm', name: 'domoForm',
-            onSubmit: handleDomo,
-            action: '/maker',
-            method: 'POST',
-            className: 'domoForm'
-        },
-        React.createElement(
-            'label',
-            { htmlFor: 'name' },
-            'Name: '
-        ),
-        React.createElement('input', { id: 'name', type: 'text', name: 'name', placeholder: 'Domo Name' }),
-        React.createElement(
-            'label',
-            { htmlFor: 'age' },
-            'Age: '
-        ),
-        React.createElement('input', { id: 'age', type: 'text', name: 'age', placeholder: 'Domo Age' }),
-        React.createElement(
-            'label',
-            { htmlFor: 'gold' },
-            'Gold: '
-        ),
-        React.createElement('input', { id: 'gold', type: 'text', name: 'gold', placeholder: 'Domo Gold' }),
-        React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-        React.createElement('input', { className: 'makeDomoSubmit', type: 'submit', value: 'Make Domo' })
+        'h1',
+        null,
+        'Hello, ',
+        props.username
     );
 };
 
-const DomoList = function (props) {
-    if (props.domos.length === 0) {
+const create = () => {};
+
+const register = (event, csrf, username) => {
+    event._csrf = csrf;
+    sendAjax('POST', '/register', event, data => {
+        showToast(data.message);
+        loadEvents(csrf, username);
+    });
+};
+
+// const deleteDomo = (domo) => {
+//     sendAjax('POST', '/delete', domo, function() {
+//         loadDomosFromServer();
+//     });
+// }
+
+
+const EventList = props => {
+    if (props.events.length === 0) {
         return React.createElement(
             'div',
-            { className: 'domoList' },
+            null,
             React.createElement(
-                'h3',
-                { className: 'emptyDomo' },
-                'No Domos Yet'
+                'h1',
+                null,
+                'No Events Found.'
             )
         );
     }
-    const domoNodes = props.domos.map(function (domo) {
+
+    const events = props.events.map(event => {
+        let buttonText = "Register";
+        let buttonClass = "buttonRegister";
+        event.attendees.forEach(a => {
+            if (a === props.username) {
+                buttonText = "Going";
+                buttonClass = "buttonGoing";
+            }
+        });
         return React.createElement(
             'div',
-            { key: domo._id, className: 'domo' },
-            React.createElement('img', { src: '/assets/img/domoface.jpeg', alt: 'domo face', className: 'domoFace' }),
+            { key: event.id, className: 'event' },
+            React.createElement('img', { src: '/assets/img/eventIcon.png', alt: 'event', className: 'eventImage' }),
             React.createElement(
-                'h3',
-                { className: 'domoName' },
-                'Name: ',
-                domo.name
+                'h1',
+                null,
+                event.name
             ),
             React.createElement(
-                'h3',
-                { className: 'domoAge' },
-                'Age: ',
-                domo.age
+                'p',
+                { className: 'eventDate' },
+                event.date
             ),
             React.createElement(
-                'h3',
-                { className: 'domoGold' },
-                'Gold: ',
-                domo.gold
+                'p',
+                { className: 'eventDesc' },
+                event.desc
             ),
+            React.createElement('input', { className: buttonClass, type: 'button', onClick: register.bind(_this, event).bind(_this, props.csrf).bind(_this, props.username), value: buttonText }),
             React.createElement(
-                'button',
-                { onClick: deleteDomo.bind(this, domo) },
-                'Delete'
+                'p',
+                { className: 'author' },
+                event.createdBy
             )
         );
     });
     return React.createElement(
         'div',
-        { className: 'domoList' },
-        domoNodes
+        { className: 'eventList' },
+        events
     );
 };
 
-const deleteDomo = domo => {
-    sendAjax('POST', '/delete', domo, function () {
-        loadDomosFromServer();
-    });
-};
-
-const loadDomosFromServer = () => {
-    sendAjax('GET', '/getDomos', null, data => {
-        console.log(data);
-        ReactDOM.render(React.createElement(DomoList, { domos: data.domos }), document.querySelector('#domos'));
+const loadEvents = (csrf, username) => {
+    sendAjax('GET', '/events', null, data => {
+        ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('events'));
     });
 };
 
 const setup = function (csrf) {
-    ReactDOM.render(React.createElement(DomoForm, { csrf: csrf }), document.querySelector('#makeDomo'));
-    ReactDOM.render(React.createElement(DomoList, { domos: [] }), document.querySelector('#domos'));
-    loadDomosFromServer();
+    let username = '';
+    sendAjax('GET', '/user', null, data => {
+        username = data.username;
+        ReactDOM.render(React.createElement(Greeting, { csrf: csrf, username: username }), document.getElementById('greeting'));
+        loadEvents(csrf, username);
+    });
 };
 
 const getToken = () => {
@@ -121,12 +107,10 @@ $(document).ready(function () {
     getToken();
 });
 const handleError = message => {
-    $('#errorMessage').text(message);
-    $('#domoMessage').animate({ width: 'toggle' }, 350);
+    console.log(message);
 };
 
 const redirect = response => {
-    $('#domoMessage').animate({ width: 'hide' }, 350);
     window.location = response.redirect;
 };
 
@@ -140,7 +124,16 @@ const sendAjax = (type, action, data, success) => {
         success: success,
         error: function (xhr, status, error) {
             let messageObj = JSON.parse(xhr.responseText);
-            handleError(messageObj.error);
+            showToast(messageObj.error);
         }
     });
+};
+
+const showToast = message => {
+    let toast = document.getElementById("snackbar");
+    toast.innerHTML = message;
+    toast.className = "show";
+    setTimeout(function () {
+        toast.className = toast.className.replace("show", "");
+    }, 3000);
 };

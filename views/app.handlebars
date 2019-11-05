@@ -9,19 +9,29 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
   <link rel="shortcut icon" href="/assets/img/favicon.png"/>
+  <link rel="stylesheet" href="https://jurikiin.com/KiinStyles/css/kiinStyle.css">
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
 <body>
-  <nav><a href="/login"><img id="logo" src="/assets/img/face.png" alt="face logo"/></a>
-    <div class="navlink"><a href="/logout">Log out</a></div>
-  </nav>
-  <section id="makeDomo">
+  <header class='header-grid'>
+    <span id='greeting' class='font-header font-sm margin-left-5 bold'></span>
+    <a class='' href='/login'><img src='/assets/img/logo.png' alt='logo' width="50" height="50" /></a>
+    <ul class='list-clear'>
+      <li class='d-inline pad-left-10 pad-right-10 nav-item'>Profile</li>
+      <li class='d-inline nav-item'><a href='/logout'>Logout</a></li>
+    </ul>
+  </header>
+
+  <section id='search'>
+    <input type='text' id='searchbar' placeholder="Search Events">
+    <input type='button' onclick="create()" value='Create'/>
   </section>
-  <section id="domos">
+
+  <section id="events">
   </section>
-  <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
-  </div>
+  <section id="upcoming">
+  </section>
+  <div id="snackbar">Some text some message..</div>
   <script src="/assets/bundle.js"></script>
 </body>
 </html>

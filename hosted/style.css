@@ -6,8 +6,7 @@ html, body {
     overflow-x: hidden;
 }
 
-body {
-    background: rgb(206,66,87);
+.body-gradient {
     background: linear-gradient(90deg, rgba(206,66,87,1) 0%, rgba(255,155,84,1) 100%);
 }
 
@@ -96,3 +95,173 @@ a{
     padding: 10px;
     color: #999999;
 }
+
+/* ------- APP ------ */
+.header-grid{
+    display: grid;
+    grid-template-columns: 33.33% 33.33% 33.3%;
+    background-color: #D04656;
+}
+.header-grid > *{
+    display: flex;
+}
+.header-grid > a, ul{
+    justify-content: center;
+    align-items: center;
+}
+.id-body{
+    background-color: #ffffff !important;
+}
+#greeting {
+    margin-left: 5%;
+}
+
+/* ------- SEARCH ------ */
+#search{
+    margin-top: 50px;
+}
+#search input[type='text'] {
+    width: 25%;
+    padding: 15px;
+    border-radius: 10px;
+    border:none;
+    background-color: #EEEDED;
+    font-size: 20px;
+    margin: 0 10%;
+}
+
+#search input[type='button'] {
+    width: 250px;
+    padding: 15px;
+    border-radius: 40px;
+    border:none;
+    background-color: #FFF400;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all .25s ease-in-out;
+    margin-left: 20%;
+}
+
+#search input[type='button']:hover {
+    transform: scale(1.05);
+}
+
+/* ------- EVENTS ------ */
+#events {
+    margin: 50px 0 0 10%;
+    width: 60%;
+}
+.event {
+    width:100%;
+    display: grid;
+    grid-template-columns: 20% 60% 20%;
+    grid-template-areas: 
+        "img title register"
+        "img date author"
+        "img desc desc";
+    margin: 5% 0;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.event:nth-of-type(even) {
+    background-color: #ffffff;
+}
+.event:nth-of-type(odd) {
+    background-color: #dfdfdf;
+}
+.event img{
+    grid-area: img;
+    width:80%;
+    margin: 10%;
+    height:auto;
+}
+.event h1 {
+    grid-area: title;
+    font-family: sans-serif;
+}
+.eventDate{
+    grid-area: date;
+}
+.eventDesc{
+    grid-area: desc;
+    max-height: 50px;
+    overflow: hidden;
+    margin-right:10%;
+}
+.author{
+    grid-area: author;
+    justify-self: center;
+}
+
+.buttonRegister, .buttonGoing {
+    justify-self: center;
+    align-self: center;
+    grid-area: register;
+    padding: 10px 25px;
+    margin: 10% 0;
+    height:50px;
+    text-align: center;
+    width: 80%;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+}
+.buttonGoing {
+    background-color: rgb(93, 216, 77);
+    color:black;
+}
+.buttonRegister {
+    background-color: #e05050;
+    color:white;
+}
+
+/* https://www.w3schools.com/howto/howto_js_snackbar.asp */
+
+/* The snackbar - position it at the bottom and in the middle of the screen */
+#snackbar {
+    visibility: hidden; /* Hidden by default. Visible on click */
+    min-width: 250px; /* Set a default minimum width */
+    margin-left: -125px; /* Divide value of min-width by 2 */
+    background-color: #333; /* Black background color */
+    color: #fff; /* White text color */
+    text-align: center; /* Centered text */
+    border-radius: 40px; /* Rounded borders */
+    padding: 16px; /* Padding */
+    position: fixed; /* Sit on top of the screen */
+    z-index: 1; /* Add a z-index if needed */
+    left: 50%; /* Center the snackbar */
+    bottom: 30px; /* 30px from the bottom */
+    font-family: sans-serif;
+  }
+  
+  /* Show the snackbar when clicking on a button (class added with JavaScript) */
+  #snackbar.show {
+    visibility: visible; /* Show the snackbar */
+    /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+    However, delay the fade out process for 2.5 seconds */
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  }
+  
+  /* Animations to fade the snackbar in and out */
+  @-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+  }
+  
+  @keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+  }
+  
+  @-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+  }
+  
+  @keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+  }
+
+

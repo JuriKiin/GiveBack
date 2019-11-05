@@ -22,7 +22,7 @@ const login = (req, res) => {
   return Account.AccountModel.authenticate(username, password, (err, account) => {
     if (err || !account) return rs.status(401).json({ error: 'Username or Password is incorrect' });
     rq.session.account = Account.AccountModel.toAPI(account);
-    return rs.json({ redirect: '/maker' });
+    return rs.json({ redirect: '/home' });
   });
 };
 
@@ -48,7 +48,7 @@ const signup = (req, res) => {
     newAccount.save()
             .then(() => {
               rq.session.account = Account.AccountModel.toAPI(newAccount);
-              return rs.json({ redirect: '/maker' });
+              return rs.json({ redirect: '/home' });
             })
             .catch((err) => {
               if (err.code === 11000) {
@@ -56,6 +56,13 @@ const signup = (req, res) => {
               }
               return rs.status(400).json({ error: 'An error occured' });
             });
+  });
+};
+
+const getUser = (req, res) => {
+  return Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+    if(err) return res.status(400).json({error: "Username not found"});
+    return res.json({username: doc.username});
   });
 };
 
@@ -73,3 +80,4 @@ module.exports.login = login;
 module.exports.signup = signup;
 module.exports.logout = logout;
 module.exports.getToken = getToken;
+module.exports.getUser = getUser;
