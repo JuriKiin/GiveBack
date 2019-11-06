@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
+const Event = require('../models/Event.js');
 
 mongoose.Promise = global.Promise;
 
@@ -24,6 +25,12 @@ const AccountSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  events: {
+    type: [Event.Schema],
+  },
+  createdEvents: {
+    type: [Event.Schema],
+  },
   createdDate: {
     type: Date,
     default: Date.now,
@@ -34,6 +41,8 @@ AccountSchema.statics.toAPI = doc => ({
   // _id is built into your mongo document and is guaranteed to be unique
   username: doc.username,
   _id: doc._id,
+  events: doc.events,
+  createdEvents: doc.createdEvents,
 });
 
 const validatePassword = (doc, password, callback) => {

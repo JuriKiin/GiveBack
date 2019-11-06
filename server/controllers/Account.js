@@ -41,6 +41,8 @@ const signup = (req, res) => {
   return Account.AccountModel.generateHash(rq.body.pass, (salt, hash) => {
     const accountData = {
       username: rq.body.username,
+      events: [],
+      createdEvents: [],
       salt,
       password: hash,
     };
@@ -59,12 +61,16 @@ const signup = (req, res) => {
   });
 };
 
-const getUser = (req, res) => {
-  return Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
-    if(err) return res.status(400).json({error: "Username not found"});
-    return res.json({username: doc.username});
+
+const getUser = (req, res) =>
+  Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+    if (err) return res.status(400).json({ error: 'Username not found' });
+    return res.json({
+      username: doc.username,
+      events: doc.events,
+      createdEvents: doc.createdEvents,
+    });
   });
-};
 
 const getToken = (request, response) => {
   const req = request;

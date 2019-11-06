@@ -3,6 +3,7 @@ const handleError = (message) => {
 };
 
 const redirect = (response) => {
+    console.log(response);
     window.location = response.redirect;
 };
 
@@ -22,6 +23,7 @@ const sendAjax = (type, action, data, success) => {
 };
 
 const showToast = (message) => {
+    console.log(message);
     let toast = document.getElementById("snackbar");
     toast.innerHTML = message;
     toast.className = "show";

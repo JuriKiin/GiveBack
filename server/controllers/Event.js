@@ -1,49 +1,61 @@
 const models = require('../models');    // Import all models
 const Event = models.Event;
+const Account = models.Account;
 
-const home = (req, res) => {
-    return res.render('app', { csrfToken: req.csrfToken()});
-};
+const home = (req, res) => res.render('app', { csrfToken: req.csrfToken() });
 
 const getEvents = (req, res) => {
-    return res.json({
-        events: [
-            {
-                name: "Test Event",
-                createdBy: "jurikiin",
-                date: new Date(),
-                desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque luctus tortor eu elit gravida, vel pulvinar diam ultricies. Donec sed mi vitae mauris condimentum vulputate. Mauris velit erat, faucibus ac ipsum quis, blandit euismod lacus. Vestibulum et finibus arcu. Duis purus arcu, faucibus quis sapien eu, luctus tincidunt lorem. Integer id porttitor ante, et consequat lacus",
-                attendees: [
-                    "nd11",
-                    "Boomer",
-                    "Sammi",
-                ],
-                createdDate: Date.now
-            },
-            {
-                name: "Event 2",
-                createdBy: "nd11",
-                date: new Date(),
-                desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque luctus tortor eu elit gravida, vel pulvinar diam ultricies. Donec sed mi vitae mauris condimentum vulputate. Mauris velit erat, faucibus ac ipsum quis, blandit euismod lacus. Vestibulum et finibus arcu. Duis purus arcu, faucibus quis sapien eu, luctus tincidunt lorem. Integer id porttitor ante, et consequat lacus",
-                attendees: [
-                    "nd11",
-                    "Boomer",
-                    "Sammi"
-                ],
-                createdDate: Date.now
-            }
-        ],
+  Event.EventModel.find().select('').exec((err, docs) => {
+    if (err) return res.json({ err });
+    return res.json({ events: docs });
+  });
+};
+
+const eventToObject = (event) => ({
+  address: event.address,
+  attendees: event.attendees,
+  createdBy: event.createdBy,
+  createdDate: event.createdDate,
+  date: event.date,
+  desc: event.desc,
+  name: event.name,
+  _id: event._id,
+});
+
+const create = (req, res) => {
+  if (!req.body.name || !req.body.date || !req.body.address || !req.body.desc) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+  const event = {
+    name: req.body.name,
+    date: req.body.date,
+    address: req.body.address,
+    desc: req.body.desc,
+    attendees: [''],
+    createdBy: req.session.account.username,
+  };
+  const newEvent = new Event.EventModel(event);
+
+  return newEvent.save()
+    .then(() => {
+      Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+        if (err) return res.status(400).json({ error: 'Username not found' });
+        const user = doc;
+        const pushEle = eventToObject(newEvent);
+        user.createdEvents.push(pushEle);
+        console.log("PUSHED");
+        return user.save().then(() => {
+          console.log("SAVED");
+          return res.json({ redirect: '/home'});
+        }).catch((er) => {
+          console.log("ERROR");
+          res.json({ redirect: '/home'});
+        });
+      });
     });
 };
 
-const register = (req, res) => {
-    console.log("HERE");
-    return res.json({message: "Registered Successfully"});
-};
-
-const create = (req, res) => {
-    return res.json({message: "Created"});
-};
+const register = (req, res) => res.json({ message: 'Registered Successfully' });
 
 module.exports.home = home;
 module.exports.getEvents = getEvents;

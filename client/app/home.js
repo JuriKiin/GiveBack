@@ -5,7 +5,48 @@ const Greeting = (props) => {
 };
 
 const create = () => {
+    $('#searchButton').css('display','none');
+    sendAjax('GET', '/getToken', null, (result) => {
+        ReactDOM.render(
+            <CreateForm csrf={result.csrfToken} />,
+            document.getElementById('events')
+        );
+    });
+};
 
+const handleCreate = (e) => {
+    e.preventDefault();
+    if($('#name').val() == '' || $('#address').val() == '' || $('#desc').val() == '') {
+        showToast("All fields are required");
+        return false;
+    }
+    $('#searchButton').css('display','block');
+    sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), redirect);
+};
+
+const CreateForm = (props) => {
+    return (
+        <form id="createForm" name="createForm"
+                onSubmit={handleCreate}
+                action="/create"
+                method="POST"
+                className="createForm"
+            >
+            <h1>Create an event.</h1>
+            <input id="name" type="text" name="name" placeholder="Event Name" />
+            <input id="address" type="text" name="address" placeholder="Event Address" />
+            <input type='date' name="date"/>
+            <textarea placeholder="Event Description" id='desc' name="desc">
+
+            </textarea>
+            <input type="hidden" name="_csrf" value={props.csrf} />
+            <input className="submit" type="submit" value="Create" />
+        </form>
+    );
+};
+
+const closeCreateForm = () => {
+    console.log("Closing form");
 };
 
 const register = (event, csrf, username) => {
@@ -26,7 +67,7 @@ const register = (event, csrf, username) => {
 const EventList = (props) => {
     if(props.events.length === 0) {
         return (
-            <div><h1>No Events Found.</h1></div>
+            <div><h1 className="noEvents">No Events Found.</h1></div>
         );
     }
 
@@ -59,6 +100,7 @@ const EventList = (props) => {
 
 const loadEvents = (csrf, username) => {
     sendAjax('GET', '/events', null, (data) => {
+        console.log(data);
         ReactDOM.render(
             <EventList events={data.events} csrf={csrf} username={username}/>,
             document.getElementById('events')
@@ -69,6 +111,7 @@ const loadEvents = (csrf, username) => {
 const setup = function(csrf) {
     let username = '';
     sendAjax('GET', '/user', null, (data) => {
+        console.log(data);
         username = data.username;
         ReactDOM.render(
             <Greeting csrf={csrf} username={username}/>,

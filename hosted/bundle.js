@@ -1,6 +1,6 @@
-var _this = this;
+'use strict';
 
-const Greeting = props => {
+var Greeting = function Greeting(props) {
     return React.createElement(
         'h1',
         null,
@@ -9,11 +9,53 @@ const Greeting = props => {
     );
 };
 
-const create = () => {};
+var create = function create() {
+    $('#searchButton').css('display', 'none');
+    sendAjax('GET', '/getToken', null, function (result) {
+        ReactDOM.render(React.createElement(CreateForm, { csrf: result.csrfToken }), document.getElementById('events'));
+    });
+};
 
-const register = (event, csrf, username) => {
+var handleCreate = function handleCreate(e) {
+    e.preventDefault();
+    if ($('#name').val() == '' || $('#address').val() == '' || $('#desc').val() == '') {
+        showToast("All fields are required");
+        return false;
+    }
+    $('#searchButton').css('display', 'block');
+    sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), redirect);
+};
+
+var CreateForm = function CreateForm(props) {
+    return React.createElement(
+        'form',
+        { id: 'createForm', name: 'createForm',
+            onSubmit: handleCreate,
+            action: '/create',
+            method: 'POST',
+            className: 'createForm'
+        },
+        React.createElement(
+            'h1',
+            null,
+            'Create an event.'
+        ),
+        React.createElement('input', { id: 'name', type: 'text', name: 'name', placeholder: 'Event Name' }),
+        React.createElement('input', { id: 'address', type: 'text', name: 'address', placeholder: 'Event Address' }),
+        React.createElement('input', { type: 'date', name: 'date' }),
+        React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc' }),
+        React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+        React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' })
+    );
+};
+
+var closeCreateForm = function closeCreateForm() {
+    console.log("Closing form");
+};
+
+var register = function register(event, csrf, username) {
     event._csrf = csrf;
-    sendAjax('POST', '/register', event, data => {
+    sendAjax('POST', '/register', event, function (data) {
         showToast(data.message);
         loadEvents(csrf, username);
     });
@@ -26,23 +68,23 @@ const register = (event, csrf, username) => {
 // }
 
 
-const EventList = props => {
+var EventList = function EventList(props) {
     if (props.events.length === 0) {
         return React.createElement(
             'div',
             null,
             React.createElement(
                 'h1',
-                null,
+                { className: 'noEvents' },
                 'No Events Found.'
             )
         );
     }
 
-    const events = props.events.map(event => {
-        let buttonText = "Register";
-        let buttonClass = "buttonRegister";
-        event.attendees.forEach(a => {
+    var events = props.events.map(function (event) {
+        var buttonText = "Register";
+        var buttonClass = "buttonRegister";
+        event.attendees.forEach(function (a) {
             if (a === props.username) {
                 buttonText = "Going";
                 buttonClass = "buttonGoing";
@@ -67,7 +109,7 @@ const EventList = props => {
                 { className: 'eventDesc' },
                 event.desc
             ),
-            React.createElement('input', { className: buttonClass, type: 'button', onClick: register.bind(_this, event).bind(_this, props.csrf).bind(_this, props.username), value: buttonText }),
+            React.createElement('input', { className: buttonClass, type: 'button', onClick: register.bind(undefined, event).bind(undefined, props.csrf).bind(undefined, props.username), value: buttonText }),
             React.createElement(
                 'p',
                 { className: 'author' },
@@ -82,23 +124,25 @@ const EventList = props => {
     );
 };
 
-const loadEvents = (csrf, username) => {
-    sendAjax('GET', '/events', null, data => {
+var loadEvents = function loadEvents(csrf, username) {
+    sendAjax('GET', '/events', null, function (data) {
+        console.log(data);
         ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('events'));
     });
 };
 
-const setup = function (csrf) {
-    let username = '';
-    sendAjax('GET', '/user', null, data => {
+var setup = function setup(csrf) {
+    var username = '';
+    sendAjax('GET', '/user', null, function (data) {
+        console.log(data);
         username = data.username;
         ReactDOM.render(React.createElement(Greeting, { csrf: csrf, username: username }), document.getElementById('greeting'));
         loadEvents(csrf, username);
     });
 };
 
-const getToken = () => {
-    sendAjax('GET', '/getToken', null, result => {
+var getToken = function getToken() {
+    sendAjax('GET', '/getToken', null, function (result) {
         setup(result.csrfToken);
     });
 };
@@ -106,15 +150,17 @@ const getToken = () => {
 $(document).ready(function () {
     getToken();
 });
-const handleError = message => {
+"use strict";
+
+var handleError = function handleError(message) {
     console.log(message);
 };
 
-const redirect = response => {
+var redirect = function redirect(response) {
     window.location = response.redirect;
 };
 
-const sendAjax = (type, action, data, success) => {
+var sendAjax = function sendAjax(type, action, data, success) {
     $.ajax({
         cache: false,
         type: type,
@@ -122,15 +168,16 @@ const sendAjax = (type, action, data, success) => {
         data: data,
         dataType: 'json',
         success: success,
-        error: function (xhr, status, error) {
-            let messageObj = JSON.parse(xhr.responseText);
+        error: function error(xhr, status, _error) {
+            var messageObj = JSON.parse(xhr.responseText);
             showToast(messageObj.error);
         }
     });
 };
 
-const showToast = message => {
-    let toast = document.getElementById("snackbar");
+var showToast = function showToast(message) {
+    console.log(message);
+    var toast = document.getElementById("snackbar");
     toast.innerHTML = message;
     toast.className = "show";
     setTimeout(function () {

@@ -11,8 +11,8 @@ const router = (app) => {
   app.get('/home', mid.requiresLogin, controllers.Event.home);
   app.get('/events', mid.requiresLogin, controllers.Event.getEvents);
   app.post('/register', mid.requiresLogin, controllers.Event.register);
-  app.post('/createEvent', mid.requiresLogin, controllers.Event.create);
-  //app.post('/delete', mid.requiresLogin, controllers.Domo.deleteDomo);
+  app.post('/create', mid.requiresLogin, controllers.Event.create);
+  // app.post('/delete', mid.requiresLogin, controllers.Domo.deleteDomo);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
 };
 
