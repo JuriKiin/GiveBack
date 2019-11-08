@@ -23,7 +23,9 @@ var handleCreate = function handleCreate(e) {
         return false;
     }
     $('#searchButton').css('display', 'block');
-    sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), redirect);
+    sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), function (data) {
+        showToast(data.message);
+    });
 };
 
 var CreateForm = function CreateForm(props) {

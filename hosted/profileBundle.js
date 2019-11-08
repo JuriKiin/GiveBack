@@ -30,7 +30,6 @@ var Greeting = function Greeting(props) {
 
 var loadEvents = function loadEvents(csrf, username) {
     sendAjax('GET', '/events?username=' + username, null, function (data) {
-        console.log(data);
         ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('events'));
     });
 };

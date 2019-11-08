@@ -61,8 +61,8 @@ const create = (req, res) => {
         const pushEle = eventToObject(newEvent);
         const tempArr = user.createdEvents.concat([pushEle]);
         user.createdEvents = tempArr;
-        return user.save().then(() => res.json({ redirect: '/home' })).catch(() => {
-          res.json({ redirect: '/home' });
+        return user.save().then(() => res.json({ message: 'Created Successfully' })).catch(() => {
+          res.json({ message: 'Something went wrong' });
         });
       });
     });
@@ -133,10 +133,18 @@ const register = (req, res) => {
 const deleteEvent = (req, res) => {
   if(!req.body._id) return res.status(400).json({error: "Invalid Event. Try Again."});
 
-  Event.EventModel.findById(req.body._id, (err, doc) => {
-    if(err) return res.json({error: "No event found."});
-    return Event.EventModel.deleteOne({_id: doc._id}, () => {
-      res.json({message: "Deleted Successfully"});
+  Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
+    if(userError) return res.status(400).json({error: "Username not found"});
+
+    Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
+      if(eventError) return res.json({error: "No event found."});
+      if(userDoc.username === eventDoc.createdBy) {
+        return Event.EventModel.deleteOne({_id: doc._id}, () => {
+          res.json({message: "Deleted Successfully"});
+        });
+      } else {
+        res.json({error: "Event not associated with this account."});
+      }
     });
   });
 };
