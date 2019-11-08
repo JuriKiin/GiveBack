@@ -84,12 +84,18 @@ var EventList = function EventList(props) {
     var events = props.events.map(function (event) {
         var buttonText = "Register";
         var buttonClass = "buttonRegister";
-        event.attendees.forEach(function (a) {
-            if (a === props.username) {
-                buttonText = "Going";
-                buttonClass = "buttonGoing";
-            }
-        });
+        if (event.createdBy == props.username) {
+            buttonText = "Created";
+            buttonClass = "buttonCreated";
+        } else {
+            event.attendees.forEach(function (a) {
+                if (a === props.username) {
+                    buttonText = "Going";
+                    buttonClass = "buttonGoing";
+                }
+            });
+        }
+
         return React.createElement(
             'div',
             { key: event.id, className: 'event' },
@@ -109,7 +115,7 @@ var EventList = function EventList(props) {
                 { className: 'eventDesc' },
                 event.desc
             ),
-            React.createElement('input', { className: buttonClass, type: 'button', onClick: register.bind(undefined, event).bind(undefined, props.csrf).bind(undefined, props.username), value: buttonText }),
+            React.createElement('input', { disabled: event.createdBy === props.username, className: buttonClass, type: 'button', onClick: register.bind(undefined, event).bind(undefined, props.csrf).bind(undefined, props.username), value: buttonText }),
             React.createElement(
                 'p',
                 { className: 'author' },

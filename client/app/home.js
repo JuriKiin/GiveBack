@@ -74,19 +74,25 @@ const EventList = (props) => {
     const events = props.events.map((event) => {
         let buttonText = "Register";
         let buttonClass = "buttonRegister";
-        event.attendees.forEach((a) => {
-            if(a === props.username)  {
-                buttonText = "Going";
-                buttonClass = "buttonGoing";
-            }
-        });
+        if(event.createdBy == props.username) {
+            buttonText = "Created";
+            buttonClass = "buttonCreated";
+        } else {
+            event.attendees.forEach((a) => {
+                if(a === props.username)  {
+                    buttonText = "Going";
+                    buttonClass = "buttonGoing";
+                }
+            });
+        }
+
         return (
             <div key={event.id} className='event'>
                 <img src='/assets/img/eventIcon.png' alt='event' className='eventImage' />
                 <h1>{event.name}</h1>
                 <p className='eventDate'>{event.date}</p>
                 <p className='eventDesc'>{event.desc}</p>
-                <input className={buttonClass} type='button' onClick={register.bind(this,event).bind(this,props.csrf).bind(this,props.username)} value={buttonText} />
+                <input disabled={event.createdBy === props.username} className={buttonClass} type='button' onClick={register.bind(this,event).bind(this,props.csrf).bind(this,props.username)} value={buttonText} />
                 <p className='author'>{event.createdBy}</p>
             </div>
         );

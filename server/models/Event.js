@@ -49,6 +49,15 @@ EventSchema.statics.toAPI = doc => ({
   _id: doc._id,
 });
 
+EventSchema.statics.findByID = (id, callback) => {
+  const search = {
+    _id: id,
+  };
+
+  return AccountModel.findOne(search, callback);
+};
+
+
 EventModel = mongoose.model('Event', EventSchema);
 
 module.exports.EventModel = EventModel;

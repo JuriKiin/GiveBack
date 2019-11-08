@@ -15,25 +15,30 @@ const eventToObject = (event) => ({
   address: event.address,
   attendees: event.attendees,
   createdBy: event.createdBy,
-  createdDate: event.createdDate,
   date: event.date,
   desc: event.desc,
   name: event.name,
-  _id: event._id,
 });
+
+const createEventFromReq = (body) => {
+  console.log(body);
+  return {
+    name: body.name,
+    date: body.date,
+    address: body.address,
+    desc: body.desc,
+    attendees: [''],
+    createdBy: '',
+  };
+}
 
 const create = (req, res) => {
   if (!req.body.name || !req.body.date || !req.body.address || !req.body.desc) {
     return res.status(400).json({ error: 'All fields are required' });
   }
-  const event = {
-    name: req.body.name,
-    date: req.body.date,
-    address: req.body.address,
-    desc: req.body.desc,
-    attendees: [''],
-    createdBy: req.session.account.username,
-  };
+
+  const event = createEventFromReq(req.body);
+  event.createdBy = req.session.account.username;
   const newEvent = new Event.EventModel(event);
 
   return newEvent.save()
@@ -45,17 +50,51 @@ const create = (req, res) => {
         const tempArr = user.createdEvents.concat([pushEle]);
         user.createdEvents = tempArr;
         return user.save().then(() => {
-          console.log('SAVED');
           return res.json({ redirect: '/home' });
         }).catch((er) => {
-          console.log(`ERROR: ${er}`);
           res.json({ redirect: '/home' });
         });
       });
     });
 };
 
-const register = (req, res) => res.json({ message: 'Registered Successfully' });
+//Register for an event.
+//Two things happen:
+//1) Find current user, and add this event to their events []
+//2) Find the event, and add the username to the list of attendees
+const register = (req, res) => {
+  if (!req.body._id) {
+    return res.status(400).json({ error: 'Invalid Event ID' });
+  }
+
+  Account.AccountModel.findByUsername(req.session.account.username, (err, user) => {
+    if(err) return res.status(400).json({error: "User not found"});
+    Event.EventModel.findById(req.body._id, (err, event) => {
+      let userEvents = user.events.concat([createEventFromReq(event)]);
+      user.events = userEvents;
+      return user.save().then(() => {
+
+        let attendees = event.attendees.concat([req.session.account.username]);
+        event.attendees = attendees;
+
+        return event.save().then(() => {
+          res.json({redirect: '/home'});
+        }).catch((err) => {
+          console.log("EVENT SAVE :: " + err);
+          res.json({redirect: '/home'});
+        });
+        
+      }).catch((err) => {
+        console.log("USER SAVE :: " + err);
+        res.json({ redirect: '/home' });
+      });
+    });
+  });
+
+
+};
+
+
 
 module.exports.home = home;
 module.exports.getEvents = getEvents;

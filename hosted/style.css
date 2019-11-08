@@ -196,7 +196,7 @@ a{
     justify-self: center;
 }
 
-.buttonRegister, .buttonGoing {
+.buttonRegister, .buttonGoing, .buttonCreated {
     justify-self: center;
     align-self: center;
     grid-area: register;
@@ -216,6 +216,11 @@ a{
 .buttonRegister {
     background-color: #e05050;
     color:white;
+}
+.buttonCreated {
+    background-color: #999999;
+    color:white;
+    cursor: no-drop !important;
 }
 
 /* https://www.w3schools.com/howto/howto_js_snackbar.asp */
