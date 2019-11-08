@@ -41,8 +41,6 @@ const signup = (req, res) => {
   return Account.AccountModel.generateHash(rq.body.pass, (salt, hash) => {
     const accountData = {
       username: rq.body.username,
-      events: [],
-      createdEvents: [],
       salt,
       password: hash,
     };

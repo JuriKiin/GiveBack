@@ -26,10 +26,10 @@ const AccountSchema = new mongoose.Schema({
     required: true,
   },
   events: {
-    type: [Event.Schema],
+    type: [],
   },
   createdEvents: {
-    type: [Event.Schema],
+    type: [],
   },
   createdDate: {
     type: Date,

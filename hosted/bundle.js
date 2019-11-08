@@ -157,6 +157,7 @@ var handleError = function handleError(message) {
 };
 
 var redirect = function redirect(response) {
+    console.log(response);
     window.location = response.redirect;
 };
 

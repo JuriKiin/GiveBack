@@ -42,14 +42,14 @@ const create = (req, res) => {
         if (err) return res.status(400).json({ error: 'Username not found' });
         const user = doc;
         const pushEle = eventToObject(newEvent);
-        user.createdEvents.push(pushEle);
-        console.log("PUSHED");
+        const tempArr = user.createdEvents.concat([pushEle]);
+        user.createdEvents = tempArr;
         return user.save().then(() => {
-          console.log("SAVED");
-          return res.json({ redirect: '/home'});
+          console.log('SAVED');
+          return res.json({ redirect: '/home' });
         }).catch((er) => {
-          console.log("ERROR");
-          res.json({ redirect: '/home'});
+          console.log(`ERROR: ${er}`);
+          res.json({ redirect: '/home' });
         });
       });
     });
