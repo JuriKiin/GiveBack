@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <title>Give Back | Home</title>
+  <title>Give Back | Profile</title>
   <script crossorigin src="https://unpkg.com/react@15/dist/react.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
   <script crossorigin src="https://unpkg.com/prop-types/prop-types.min.js"></script>
@@ -17,21 +17,15 @@
     <span id='greeting' class='font-header font-sm margin-left-5 bold'></span>
     <a class='' href='/login'><img src='/assets/img/logo.png' alt='logo' width="50" height="50" /></a>
     <ul class='list-clear'>
-      <li class='d-inline pad-left-10 pad-right-10 nav-item'><a href='/profile'>Profile</a></li>
+      <li class='d-inline pad-left-10 pad-right-10 nav-item'><a href='/home'>Home</a></li>
       <li class='d-inline nav-item'><a href='/logout'>Logout</a></li>
     </ul>
   </header>
-
-  <section id='search'>
-    <input type='text' id='searchbar' placeholder="Search Events">
-    <input type='button' onclick="create()" value='Create' id='searchButton'/>
-  </section>
-
+  <h1 className='profileHeader'>Your Events.</h1>
   <section id="events">
   </section>
-  <section id="upcoming">
-  </section>
+  
   <div id="snackbar">Some text some message..</div>
-  <script src="/assets/bundle.js"></script>
+  <script src="/assets/profileBundle.js"></script>
 </body>
 </html>

@@ -196,7 +196,7 @@ a{
     justify-self: center;
 }
 
-.buttonRegister, .buttonGoing, .buttonCreated {
+.buttonRegister, .buttonGoing, .buttonCreated, .deleteButton {
     justify-self: center;
     align-self: center;
     grid-area: register;
@@ -208,7 +208,13 @@ a{
     border: none;
     border-radius: 40px;
     cursor: pointer;
+    transition: all .25s ease-in-out;
 }
+
+.buttonRegister:hover, .buttonGoing:hover, .buttonCreated:hover, .deleteButton:hover {
+    transform: scale(1.05);
+}
+
 .buttonGoing {
     background-color: rgb(93, 216, 77);
     color:black;
@@ -306,3 +312,13 @@ a{
     transform: scale(0.95);
 }
 
+
+/* PROFILE PAGE */
+.profileHeader{
+    text-align: center;
+}
+.deleteButton {
+    background-color: #df3434;
+    color:white;
+    cursor: pointer;
+}

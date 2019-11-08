@@ -57,6 +57,13 @@ EventSchema.statics.findByID = (id, callback) => {
   return EventSchema.findOne(search, callback);
 };
 
+EventSchema.statics.findByUsername = (username, callback) => {
+  const search = {
+    createdBy: username,
+  };
+  return EventSchema.find(search, callback);
+};
+
 
 EventModel = mongoose.model('Event', EventSchema);
 

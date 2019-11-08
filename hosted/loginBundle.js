@@ -1,4 +1,6 @@
-const handleLogin = e => {
+'use strict';
+
+var handleLogin = function handleLogin(e) {
     e.preventDefault();
 
     if ($("#user").val() == '' || $('#pass').val() == '') {
@@ -9,7 +11,7 @@ const handleLogin = e => {
     return false;
 };
 
-const handleSignup = e => {
+var handleSignup = function handleSignup(e) {
     e.preventDefault();
     if ($('#user').val() == '' || $('#pass').val() == '' || $('#pass2').val() == '') {
         showToast("All fields are required");
@@ -23,7 +25,7 @@ const handleSignup = e => {
     return false;
 };
 
-const LoginWindow = props => {
+var LoginWindow = function LoginWindow(props) {
     document.getElementById("login-link").innerHTML = "Sign Up";
     document.getElementById("login-link").setAttribute('href', '/signup');
     return React.createElement(
@@ -46,7 +48,7 @@ const LoginWindow = props => {
     );
 };
 
-const SignUpWindow = props => {
+var SignUpWindow = function SignUpWindow(props) {
     document.getElementById("login-link").innerHTML = "Login";
     document.getElementById("login-link").setAttribute('href', '/login');
     return React.createElement(
@@ -70,18 +72,18 @@ const SignUpWindow = props => {
     );
 };
 
-const createLoginWindow = csrf => {
+var createLoginWindow = function createLoginWindow(csrf) {
     ReactDOM.render(React.createElement(LoginWindow, { csrf: csrf }), document.querySelector('#content'));
 };
 
-const createSignupWindow = csrf => {
+var createSignupWindow = function createSignupWindow(csrf) {
     ReactDOM.render(React.createElement(SignUpWindow, { csrf: csrf }), document.querySelector('#content'));
 };
 
-const setup = csrf => {
-    const loginButton = document.querySelector('#login-button');
+var setup = function setup(csrf) {
+    var loginButton = document.querySelector('#login-button');
 
-    loginButton.addEventListener('click', e => {
+    loginButton.addEventListener('click', function (e) {
         e.preventDefault();
         if (document.getElementById('login-link').getAttribute('href') === '/login') {
             createLoginWindow(csrf);
@@ -94,8 +96,8 @@ const setup = csrf => {
     createSignupWindow(csrf);
 };
 
-const getToken = () => {
-    sendAjax('GET', '/getToken', null, result => {
+var getToken = function getToken() {
+    sendAjax('GET', '/getToken', null, function (result) {
         setup(result.csrfToken);
     });
 };
@@ -103,15 +105,18 @@ const getToken = () => {
 $(document).ready(function () {
     getToken();
 });
-const handleError = message => {
+"use strict";
+
+var handleError = function handleError(message) {
     console.log(message);
 };
 
-const redirect = response => {
+var redirect = function redirect(response) {
+    console.log(response);
     window.location = response.redirect;
 };
 
-const sendAjax = (type, action, data, success) => {
+var sendAjax = function sendAjax(type, action, data, success) {
     $.ajax({
         cache: false,
         type: type,
@@ -119,15 +124,16 @@ const sendAjax = (type, action, data, success) => {
         data: data,
         dataType: 'json',
         success: success,
-        error: function (xhr, status, error) {
-            let messageObj = JSON.parse(xhr.responseText);
+        error: function error(xhr, status, _error) {
+            var messageObj = JSON.parse(xhr.responseText);
             showToast(messageObj.error);
         }
     });
 };
 
-const showToast = message => {
-    let toast = document.getElementById("snackbar");
+var showToast = function showToast(message) {
+    console.log(message);
+    var toast = document.getElementById("snackbar");
     toast.innerHTML = message;
     toast.className = "show";
     setTimeout(function () {

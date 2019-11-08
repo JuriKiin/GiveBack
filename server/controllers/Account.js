@@ -6,6 +6,10 @@ const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
 
+const profilePage = (req, res) => {
+  res.render('profile', { csrfToken: req.csrfToken() });
+};
+
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');  // Bring us back to login screen.
@@ -79,6 +83,7 @@ const getToken = (request, response) => {
   res.json(csrfToken);
 };
 
+module.exports.profilePage = profilePage;
 module.exports.loginPage = loginPage;
 module.exports.login = login;
 module.exports.signup = signup;
