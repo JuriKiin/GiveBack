@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-const Event = require('../models/Event.js');
 
 mongoose.Promise = global.Promise;
 

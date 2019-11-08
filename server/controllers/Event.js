@@ -20,17 +20,17 @@ const eventToObject = (event) => ({
   name: event.name,
 });
 
-const createEventFromReq = (body) => {
-  console.log(body);
-  return {
-    name: body.name,
-    date: body.date,
-    address: body.address,
-    desc: body.desc,
-    attendees: [''],
-    createdBy: '',
-  };
-}
+const createEventFromReq = (body) =>
+  // console.log(body);
+   ({
+     name: body.name,
+     date: body.date,
+     address: body.address,
+     desc: body.desc,
+     attendees: [''],
+     createdBy: '',
+     _id: body._id,
+   });
 
 const create = (req, res) => {
   if (!req.body.name || !req.body.date || !req.body.address || !req.body.desc) {
@@ -49,51 +49,69 @@ const create = (req, res) => {
         const pushEle = eventToObject(newEvent);
         const tempArr = user.createdEvents.concat([pushEle]);
         user.createdEvents = tempArr;
-        return user.save().then(() => {
-          return res.json({ redirect: '/home' });
-        }).catch((er) => {
+        return user.save().then(() => res.json({ redirect: '/home' })).catch(() => {
           res.json({ redirect: '/home' });
         });
       });
     });
 };
 
-//Register for an event.
-//Two things happen:
-//1) Find current user, and add this event to their events []
-//2) Find the event, and add the username to the list of attendees
+// Register for an event.
+// Two things happen:
+// 1) Find current user, and add this event to their events []
+// 2) Find the event, and add the username to the list of attendees
 const register = (req, res) => {
   if (!req.body._id) {
     return res.status(400).json({ error: 'Invalid Event ID' });
   }
 
-  Account.AccountModel.findByUsername(req.session.account.username, (err, user) => {
-    if(err) return res.status(400).json({error: "User not found"});
-    Event.EventModel.findById(req.body._id, (err, event) => {
-      let userEvents = user.events.concat([createEventFromReq(event)]);
-      user.events = userEvents;
-      return user.save().then(() => {
+  // Find the user
+  Account.AccountModel.findByUsername(req.session.account.username, (error, userDoc) => {
+    if (error) return res.status(400).json({ error: 'User not found' });
 
-        let attendees = event.attendees.concat([req.session.account.username]);
+    // Find the event
+    Event.EventModel.findById(req.body._id, (err, eventDoc) => {
+      if (err) return res.status(400).json({ error: 'Event not found' });
+
+      //Save the docs as variables.
+      const user = userDoc;
+      const event = eventDoc;
+
+      //If our user is in the list of attendees,
+      if (event.attendees.includes(user.username)) {
+        let newUserEvents = user.events;
+        for(let i = 0; i < newUserEvents.length; i++) { //Remove the event from our account object.
+          if(newUserEvents[i]._id === event._id) {
+            newUserEvents.splice(i,1);
+          }
+        }
+        user.events = newUserEvents;  //Reset our user events.
+
+        let newAttendeesList = event.attendees;
+        for(let i = 0; i < newAttendeesList.length; i++) {  //Remove the username from the event attendees
+          if(newAttendeesList[i] === user.username) {
+            newAttendeesList.splice(i,1);
+          }
+        }
+        event.attendees = newAttendeesList; //Reset the attendees.
+
+      } else {
+        const userEvents = user.events.concat([createEventFromReq(event)]); //Add the event to the user.
+        user.events = userEvents;
+        const attendees = event.attendees.concat([req.session.account.username]); //Add the username to the attendees list.
         event.attendees = attendees;
+      }
 
-        return event.save().then(() => {
-          res.json({redirect: '/home'});
-        }).catch((err) => {
-          console.log("EVENT SAVE :: " + err);
-          res.json({redirect: '/home'});
-        });
-        
-      }).catch((err) => {
-        console.log("USER SAVE :: " + err);
-        res.json({ redirect: '/home' });
-      });
+      return user.save().then(() => {
+        event.save().then(() =>
+          res.json({ redirect: '/home' })
+        ).catch(() =>
+          res.json({ redirect: '/home' }));
+      }).catch(() =>
+        res.json({ redirect: '/home' }));
     });
   });
-
-
 };
-
 
 
 module.exports.home = home;

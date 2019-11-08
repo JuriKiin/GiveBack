@@ -54,7 +54,7 @@ EventSchema.statics.findByID = (id, callback) => {
     _id: id,
   };
 
-  return AccountModel.findOne(search, callback);
+  return EventSchema.findOne(search, callback);
 };
 
 
