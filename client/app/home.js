@@ -114,6 +114,26 @@ const loadEvents = (csrf, username) => {
     });
 };
 
+const search = (e) => {
+    //Get our token
+    sendAjax('GET', '/getToken', null, (result) => {
+        sendAjax('GET', '/user', null, (data) => {
+            sendAjax('GET', `/events?name=${e.value}`, null, (events) => {
+                if(data.events.length === 0) {
+                    ReactDOM.render(
+                        <div className="noEvents">No Events Found</div>
+                    );
+                } else {
+                    ReactDOM.render(
+                        <EventList events={events.events} csrf={result.csrfToken} username={data.username} />,
+                        document.getElementById('events')
+                    );
+                }
+            });
+        });
+    });
+};
+
 const setup = function(csrf) {
     let username = '';
     sendAjax('GET', '/user', null, (data) => {

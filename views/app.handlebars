@@ -23,7 +23,7 @@
   </header>
 
   <section id='search'>
-    <input type='text' id='searchbar' placeholder="Search Events">
+    <input type='text' id='searchbar' oninput="search(this)"placeholder="Search Events">
     <input type='button' onclick="create()" value='Create' id='createButton'/>
   </section>
 
@@ -31,6 +31,7 @@
   </section>
   <section id="upcoming">
   </section>
+
   <div id="snackbar">Some text some message..</div>
   <script src="/assets/bundle.js"></script>
 </body>

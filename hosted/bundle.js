@@ -23,9 +23,7 @@ var handleCreate = function handleCreate(e) {
         return false;
     }
     $('#searchButton').css('display', 'block');
-    sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), function (data) {
-        showToast(data.message);
-    });
+    sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), redirect);
 };
 
 var CreateForm = function CreateForm(props) {
@@ -136,6 +134,25 @@ var loadEvents = function loadEvents(csrf, username) {
     sendAjax('GET', '/events', null, function (data) {
         console.log(data);
         ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('events'));
+    });
+};
+
+var search = function search(e) {
+    //Get our token
+    sendAjax('GET', '/getToken', null, function (result) {
+        sendAjax('GET', '/user', null, function (data) {
+            sendAjax('GET', '/events?name=' + e.value, null, function (events) {
+                if (data.events.length === 0) {
+                    ReactDOM.render(React.createElement(
+                        'div',
+                        { className: 'noEvents' },
+                        'No Events Found'
+                    ));
+                } else {
+                    ReactDOM.render(React.createElement(EventList, { events: events.events, csrf: result.csrfToken, username: data.username }), document.getElementById('events'));
+                }
+            });
+        });
     });
 };
 

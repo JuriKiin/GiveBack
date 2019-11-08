@@ -6,15 +6,24 @@ const home = (req, res) => res.render('app', { csrfToken: req.csrfToken() });
 
 const getEvents = (req, res) => {
   // If we pass in a username to the query, load events by user
+  const limitSize;
+  req.query.limit ? limitSize = req.query.limit : limitSize = 10;
   if (req.query.username) {
     Event.EventModel.find({createdBy: req.query.username}, (err, docs) => {
       if(err) return res.json({error: "No Events Found"});
       return res.json({events: docs});
     });
-  } else {
+  } 
+  else if(req.query.name) {
+    Event.EventModel.find({name: {$regex: req.query.name, $options: "i"}}, (err, docs) => {
+      if(err) return res.json({error: "No Events Found"});
+      return res.json({events: docs});
+    }).limit(limitSize);
+  }
+  else {
     //Otherwise, just load all events
     //TODO :: Load events by zip code
-    Event.EventModel.find().select('').exec((err, docs) => {
+    Event.EventModel.find().select('').limit(limitSize).exec((err, docs) => {
       if (err) return res.json({ err });
       return res.json({ events: docs });
     });
