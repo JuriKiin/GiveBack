@@ -6,42 +6,32 @@ const home = (req, res) => res.render('app', { csrfToken: req.csrfToken() });
 
 const getEvents = (req, res) => {
   // If we pass in a username to the query, load events by user
-  let limitSize = 10;
-  req.query.limit ? limitSize = req.query.limit : limitSize = 10;
+  let limitSize = 0;
+  if (req.query.limit) limitSize = req.query.limit;
+  else limitSize = 10;
+
   if (req.query.username) {
-    Event.EventModel.find({createdBy: req.query.username}, (err, docs) => {
-      if(err) return res.json({error: "No Events Found"});
-      return res.json({events: docs});
-    });
-  } 
-  else if(req.query.name) {
-    Event.EventModel.find({name: {$regex: req.query.name, $options: "i"}}, (err, docs) => {
-      if(err) return res.json({error: "No Events Found"});
-      return res.json({events: docs});
-    }).limit(limitSize);
-  }
-  else {
-    //Otherwise, just load all events
-    //TODO :: Load events by zip code
-    Event.EventModel.find().select('').limit(limitSize).exec((err, docs) => {
-      if (err) return res.json({ err });
+    Event.EventModel.find({ createdBy: req.query.username }, (err, docs) => {
+      if (err) return res.json({ error: 'No Events Found' });
       return res.json({ events: docs });
     });
+  } else if (req.query.name) {
+    Event.EventModel.find({ name: { $regex: req.query.name, $options: 'i' } }, (err, docs) => {
+      if (err) return res.json({ error: 'No Events Found' });
+      return res.json({ events: docs });
+    }).limit(limitSize);
+  } else {
+    // Otherwise, just load all events
+    // TODO :: Load events by zip code
+    Event.EventModel.find().select('').limit(limitSize)
+      .exec((err, docs) => {
+        if (err) return res.json({ err });
+        return res.json({ events: docs });
+      });
   }
 };
 
-//This takes in an event and casts it to a normal object
-const eventToObject = (event) => ({
-  address: event.address,
-  attendees: event.attendees,
-  createdBy: event.createdBy,
-  date: event.date,
-  desc: event.desc,
-  name: event.name,
-  _id: event._id,
-});
-
-//This creates an event object from a req.body
+// This creates an event object from a req.body
 const createEventFromReq = (body) =>
    ({
      name: body.name,
@@ -53,7 +43,7 @@ const createEventFromReq = (body) =>
      _id: body._id,
    });
 
-//Create an event
+// Create an event
 const create = (req, res) => {
   if (!req.body.name || !req.body.date || !req.body.address || !req.body.desc) {
     return res.status(400).json({ error: 'All fields are required' });
@@ -68,8 +58,7 @@ const create = (req, res) => {
       Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
         if (err) return res.status(400).json({ error: 'Username not found' });
         const user = doc;
-        const pushEle = eventToObject(newEvent);
-        const tempArr = user.createdEvents.concat([pushEle]);
+        const tempArr = user.createdEvents.concat([newEvent._id.toString()]);
         user.createdEvents = tempArr;
         return user.save().then(() => res.json({ redirect: '/home' })).catch(() => {
           res.json({ message: 'Something went wrong' });
@@ -101,27 +90,23 @@ const register = (req, res) => {
 
       // If our user is in the list of attendees,
       if (event.attendees.includes(user.username)) {
-        const newUserEvents = user.events;
-        // Remove the event from our account object.
-        for (let i = 0; i < newUserEvents.length; i++) {
-          if (newUserEvents[i]._id === event._id) {
-            newUserEvents.splice(i, 1);
-          }
-        }
-        user.events = newUserEvents;  // Reset our user events.
 
-        const newAttendeesList = event.attendees;
-        // Remove the username from the event attendees
-        for (let i = 0; i < newAttendeesList.length; i++) {
-          if (newAttendeesList[i] === user.username) {
-            newAttendeesList.splice(i, 1);
-          }
+        // Remove the event from our account object.
+        if(user.events.includes(event._id.toString())) {
+          let temp = user.events.filter(e => e !== event._id.toString());
+          user.events = temp; // Reset our user events.
+        } 
+
+        if(event.attendees.includes(user.username)) {
+          let temp = event.attendees.filter(e => e !== user.username);
+          event.attendees = temp;
         }
-        event.attendees = newAttendeesList; // Reset the attendees.
+
       } else {
         // Add the event to the user.
-        const userEvents = user.events.concat([createEventFromReq(event)]);
+        const userEvents = user.events.concat([event._id.toString()]);
         user.events = userEvents;
+
         // Add the username to the attendees list.
         const attendees = event.attendees.concat([req.session.account.username]);
         event.attendees = attendees;
@@ -139,57 +124,57 @@ const register = (req, res) => {
 };
 
 
-//Delete an event
+// Delete an event
 const deleteEvent = (req, res) => {
-  if(!req.body._id) return res.status(400).json({error: "Invalid Event. Try Again."});
+  if (!req.body._id) return res.status(400).json({ error: 'Invalid Event. Try Again.' });
 
   Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
-    if(userError) return res.status(400).json({error: "Username not found"});
+    if (userError) return res.status(400).json({ error: 'Username not found' });
 
     Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
-      if(eventError) return res.json({error: "No event found."});
-      if(userDoc.username === eventDoc.createdBy) {
-        let attendees = eventDoc.attendees.filter(Boolean);
-        let id = eventDoc._id;
-        return Event.EventModel.deleteOne({_id: eventDoc._id}, () => {
+      if (eventError) return res.json({ error: 'No event found.' });
 
-          for(let i = 0; i < userDoc.createdEvents.length; i++) {
-            console.log(userDoc.createdEvents[i]);
-            if(userDoc.createdEvents[i]._id.toString() === id.toString()) {
-              let tempCreatedEvents = userDoc.createdEvents;
-              tempCreatedEvents.splice(i,1);
-              userDoc.createdEvents = tempCreatedEvents;
-            }
+      //Only let user delete if they made it
+      if (userDoc.username === eventDoc.createdBy) {
+
+        // Save the attendees and ID so we can use after we delete the event
+        const attendees = eventDoc.attendees.filter(Boolean);
+        const id = eventDoc._id;
+        // Delete the event
+        return Event.EventModel.deleteOne({ _id: eventDoc._id }, () => {
+          // Upon completion of deleting the event,
+          // Remove the event from the users createdEvents list
+          if(userDoc.createdEvents.includes(id.toString())) {
+            console.log("USER FOUND ITS CREATED EVENT.");
+            let temp = userDoc.createdEvents.filter(e => e !== id.toString());
+            userDoc.createdEvents = temp;
           }
+
+          // Re-save the user
           userDoc.save().then(() => {
-            for(let i = 0; i < attendees.length; i++) {
+            // Once the user is re-saved
+            // Loop through the attendees to remove the event from their
+            // Events list
+
+            for (let i = 0; i < attendees.length; i++) {
+              // Find the user
               Account.AccountModel.findByUsername(attendees[i], (err, doc) => {
-                if(err) return res.json({error: err});
-                let user = doc;
-                for(let j = 0; j < user.events.length; j++) {
-                  if(user.events[j]._id.toString() === id.toString()) {
-                    console.log("MATCH");
-                    console.log(user.events);
-                    let userEvents = user.events;
-                    userEvents.splice(j,1);
-                    console.log(userEvents);
-                    user.events = userEvents;
-                    user.save();
-                  }
+                if (err) return res.json({ error: err });
+                const user = doc;
+
+                if(user.events.includes(id.toString())) {
+                  console.log("ATTENDING USER FOUND EVENT");
+                  let temp = user.events.filter(e => e !== id.toString());
+                  user.events = temp;
+                  user.save();
                 }
               });
             }
-          }).catch((err) => {
-            return res.json({error: err});
-          });
-
-          
-          console.log("HERE SECOND");
-          res.json({message: "Deleted Successfully"});
+          }).catch((err) => res.json({ error: err }));
+          res.json({ message: 'Deleted Successfully' });
         });
-        } else {
-          res.json({error: "Event not associated with this account."});
-        }
+      }
+      res.json({ error: 'Event not associated with this account.' });
     });
   });
 };
