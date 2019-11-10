@@ -90,18 +90,16 @@ const register = (req, res) => {
 
       // If our user is in the list of attendees,
       if (event.attendees.includes(user.username)) {
-
         // Remove the event from our account object.
-        if(user.events.includes(event._id.toString())) {
-          let temp = user.events.filter(e => e !== event._id.toString());
+        if (user.events.includes(event._id.toString())) {
+          const temp = user.events.filter(e => e !== event._id.toString());
           user.events = temp; // Reset our user events.
-        } 
-
-        if(event.attendees.includes(user.username)) {
-          let temp = event.attendees.filter(e => e !== user.username);
-          event.attendees = temp;
         }
 
+        if (event.attendees.includes(user.username)) {
+          const temp = event.attendees.filter(e => e !== user.username);
+          event.attendees = temp;
+        }
       } else {
         // Add the event to the user.
         const userEvents = user.events.concat([event._id.toString()]);
@@ -130,13 +128,13 @@ const deleteEvent = (req, res) => {
 
   Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
     if (userError) return res.status(400).json({ error: 'Username not found' });
+    let user = userDoc;
 
     Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
       if (eventError) return res.json({ error: 'No event found.' });
 
-      //Only let user delete if they made it
-      if (userDoc.username === eventDoc.createdBy) {
-
+      // Only let user delete if they made it
+      if (user.username === eventDoc.createdBy) {
         // Save the attendees and ID so we can use after we delete the event
         const attendees = eventDoc.attendees.filter(Boolean);
         const id = eventDoc._id;
@@ -144,14 +142,13 @@ const deleteEvent = (req, res) => {
         return Event.EventModel.deleteOne({ _id: eventDoc._id }, () => {
           // Upon completion of deleting the event,
           // Remove the event from the users createdEvents list
-          if(userDoc.createdEvents.includes(id.toString())) {
-            console.log("USER FOUND ITS CREATED EVENT.");
-            let temp = userDoc.createdEvents.filter(e => e !== id.toString());
-            userDoc.createdEvents = temp;
+          if (user.createdEvents.includes(id.toString())) {
+            const temp = user.createdEvents.filter(e => e !== id.toString());
+            user.createdEvents = temp;
           }
 
           // Re-save the user
-          userDoc.save().then(() => {
+          user.save().then(() => {
             // Once the user is re-saved
             // Loop through the attendees to remove the event from their
             // Events list
@@ -162,9 +159,8 @@ const deleteEvent = (req, res) => {
                 if (err) return res.json({ error: err });
                 const user = doc;
 
-                if(user.events.includes(id.toString())) {
-                  console.log("ATTENDING USER FOUND EVENT");
-                  let temp = user.events.filter(e => e !== id.toString());
+                if (user.events.includes(id.toString())) {
+                  const temp = user.events.filter(e => e !== id.toString());
                   user.events = temp;
                   user.save();
                 }
