@@ -128,7 +128,7 @@ const deleteEvent = (req, res) => {
 
   Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
     if (userError) return res.status(400).json({ error: 'Username not found' });
-    let user = userDoc;
+    const user = userDoc;
 
     Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
       if (eventError) return res.json({ error: 'No event found.' });
@@ -157,12 +157,12 @@ const deleteEvent = (req, res) => {
               // Find the user
               Account.AccountModel.findByUsername(attendees[i], (err, doc) => {
                 if (err) return res.json({ error: err });
-                const user = doc;
+                const tempUser = doc;
 
-                if (user.events.includes(id.toString())) {
-                  const temp = user.events.filter(e => e !== id.toString());
-                  user.events = temp;
-                  user.save();
+                if (tempUser.events.includes(id.toString())) {
+                  const temp = tempUser.events.filter(e => e !== id.toString());
+                  tempUser.events = temp;
+                  tempUser.save();
                 }
               });
             }
