@@ -87,11 +87,13 @@ const register = (req, res) => {
       // Save the docs as variables.
       const user = userDoc;
       const event = eventDoc;
+      let registeredMessage = "Registered.";
 
       // If our user is in the list of attendees,
       if (event.attendees.includes(user.username)) {
         // Remove the event from our account object.
         if (user.events.includes(event._id.toString())) {
+          registeredMessage = "Unregistered."
           const temp = user.events.filter(e => e !== event._id.toString());
           user.events = temp; // Reset our user events.
         }
@@ -112,11 +114,11 @@ const register = (req, res) => {
 
       return user.save().then(() => {
         event.save().then(() =>
-          res.json({ redirect: '/home' })
+          res.json({ message: registeredMessage })
         ).catch(() =>
-          res.json({ redirect: '/home' }));
+          res.json({ message: registeredMessage }));
       }).catch(() =>
-        res.json({ redirect: '/home' }));
+        res.json({ message: registeredMessage }));
     });
   });
 };
