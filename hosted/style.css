@@ -211,7 +211,7 @@ a{
     transition: all .25s ease-in-out;
 }
 
-.buttonRegister:hover, .buttonGoing:hover, .buttonCreated:hover, .deleteButton:hover {
+.buttonRegister:hover, .buttonGoing:hover, .deleteButton:hover {
     transform: scale(1.05);
 }
 

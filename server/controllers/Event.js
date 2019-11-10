@@ -6,7 +6,7 @@ const home = (req, res) => res.render('app', { csrfToken: req.csrfToken() });
 
 const getEvents = (req, res) => {
   // If we pass in a username to the query, load events by user
-  const limitSize;
+  let limitSize = 10;
   req.query.limit ? limitSize = req.query.limit : limitSize = 10;
   if (req.query.username) {
     Event.EventModel.find({createdBy: req.query.username}, (err, docs) => {
@@ -38,6 +38,7 @@ const eventToObject = (event) => ({
   date: event.date,
   desc: event.desc,
   name: event.name,
+  _id: event._id,
 });
 
 //This creates an event object from a req.body
@@ -70,7 +71,7 @@ const create = (req, res) => {
         const pushEle = eventToObject(newEvent);
         const tempArr = user.createdEvents.concat([pushEle]);
         user.createdEvents = tempArr;
-        return user.save().then(() => res.json({ message: 'Created Successfully' })).catch(() => {
+        return user.save().then(() => res.json({ redirect: '/home' })).catch(() => {
           res.json({ message: 'Something went wrong' });
         });
       });
@@ -148,12 +149,47 @@ const deleteEvent = (req, res) => {
     Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
       if(eventError) return res.json({error: "No event found."});
       if(userDoc.username === eventDoc.createdBy) {
-        return Event.EventModel.deleteOne({_id: doc._id}, () => {
+        let attendees = eventDoc.attendees.filter(Boolean);
+        let id = eventDoc._id;
+        return Event.EventModel.deleteOne({_id: eventDoc._id}, () => {
+
+          for(let i = 0; i < userDoc.createdEvents.length; i++) {
+            console.log(userDoc.createdEvents[i]);
+            if(userDoc.createdEvents[i]._id.toString() === id.toString()) {
+              let tempCreatedEvents = userDoc.createdEvents;
+              tempCreatedEvents.splice(i,1);
+              userDoc.createdEvents = tempCreatedEvents;
+            }
+          }
+          userDoc.save().then(() => {
+            for(let i = 0; i < attendees.length; i++) {
+              Account.AccountModel.findByUsername(attendees[i], (err, doc) => {
+                if(err) return res.json({error: err});
+                let user = doc;
+                for(let j = 0; j < user.events.length; j++) {
+                  if(user.events[j]._id.toString() === id.toString()) {
+                    console.log("MATCH");
+                    console.log(user.events);
+                    let userEvents = user.events;
+                    userEvents.splice(j,1);
+                    console.log(userEvents);
+                    user.events = userEvents;
+                    user.save();
+                  }
+                }
+              });
+            }
+          }).catch((err) => {
+            return res.json({error: err});
+          });
+
+          
+          console.log("HERE SECOND");
           res.json({message: "Deleted Successfully"});
         });
-      } else {
-        res.json({error: "Event not associated with this account."});
-      }
+        } else {
+          res.json({error: "Event not associated with this account."});
+        }
     });
   });
 };
