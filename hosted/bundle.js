@@ -61,13 +61,6 @@ var register = function register(event, csrf, username) {
     });
 };
 
-// const deleteDomo = (domo) => {
-//     sendAjax('POST', '/delete', domo, function() {
-//         loadDomosFromServer();
-//     });
-// }
-
-
 var EventList = function EventList(props) {
     if (props.events.length === 0) {
         return React.createElement(
@@ -142,12 +135,13 @@ var search = function search(e) {
     sendAjax('GET', '/getToken', null, function (result) {
         sendAjax('GET', '/user', null, function (data) {
             sendAjax('GET', '/events?name=' + e.value, null, function (events) {
-                if (data.events.length === 0) {
+                console.log(events);
+                if (events.events.length === 0) {
                     ReactDOM.render(React.createElement(
                         'div',
                         { className: 'noEvents' },
                         'No Events Found'
-                    ));
+                    ), document.getElementById('events'));
                 } else {
                     ReactDOM.render(React.createElement(EventList, { events: events.events, csrf: result.csrfToken, username: data.username }), document.getElementById('events'));
                 }

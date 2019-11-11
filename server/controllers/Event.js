@@ -10,6 +10,8 @@ const getEvents = (req, res) => {
   if (req.query.limit) limitSize = req.query.limit;
   else limitSize = 10;
 
+  console.log(req.query.name);
+
   if (req.query.username) {
     Event.EventModel.find({ createdBy: req.query.username }, (err, docs) => {
       if (err) return res.json({ error: 'No Events Found' });

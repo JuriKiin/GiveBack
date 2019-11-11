@@ -57,13 +57,6 @@ const register = (event, csrf, username) => {
     });
 };
 
-// const deleteDomo = (domo) => {
-//     sendAjax('POST', '/delete', domo, function() {
-//         loadDomosFromServer();
-//     });
-// }
-
-
 const EventList = (props) => {
     if(props.events.length === 0) {
         return (
@@ -106,7 +99,7 @@ const EventList = (props) => {
 
 const loadEvents = (csrf, username) => {
     sendAjax('GET', '/events', null, (data) => {
-        console.log(data);
+        //console.log(data);
         ReactDOM.render(
             <EventList events={data.events} csrf={csrf} username={username}/>,
             document.getElementById('events')
@@ -119,9 +112,10 @@ const search = (e) => {
     sendAjax('GET', '/getToken', null, (result) => {
         sendAjax('GET', '/user', null, (data) => {
             sendAjax('GET', `/events?name=${e.value}`, null, (events) => {
-                if(data.events.length === 0) {
+                if(events.events.length === 0) {
                     ReactDOM.render(
-                        <div className="noEvents">No Events Found</div>
+                        <div className="noEvents">No Events Found</div>,
+                        document.getElementById('events')
                     );
                 } else {
                     ReactDOM.render(
@@ -137,7 +131,7 @@ const search = (e) => {
 const setup = function(csrf) {
     let username = '';
     sendAjax('GET', '/user', null, (data) => {
-        console.log(data);
+        //console.log(data);
         username = data.username;
         ReactDOM.render(
             <Greeting csrf={csrf} username={username}/>,
