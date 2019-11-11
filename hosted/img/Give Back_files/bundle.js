@@ -127,15 +127,15 @@ var Upcoming = function Upcoming(props) {
     if (props.events.length === 0) {
         return React.createElement(
             'div',
-            { className: 'noUpcoming' },
+            null,
             'No Upcoming Events'
         );
     }
     var events = props.events.map(function (event) {
         var dateText = event.date.substring(0, event.date.indexOf('T'));
-        return React.createElement(
+        React.createElement(
             'div',
-            { key: event._id, className: 'upcomingEvent' },
+            { key: event._id },
             React.createElement(
                 'h1',
                 null,
@@ -152,11 +152,6 @@ var Upcoming = function Upcoming(props) {
     return React.createElement(
         'div',
         { className: 'upcomingEvents' },
-        React.createElement(
-            'h1',
-            { className: 'upcomingHeader' },
-            'Upcoming Events'
-        ),
         events
     );
 };

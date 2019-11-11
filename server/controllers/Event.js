@@ -10,22 +10,15 @@ const getEvents = (req, res) => {
   if (req.query.limit) limitSize = req.query.limit;
   else limitSize = 10;
 
-  if(req.query.sortBy) {
-    if(req.query.sortBy === "date") {
-
-      Account.AccountModel.findByUsername(req.session.account.username, (err, userDoc) => {
-        if(err) return res.json({error: err});
-
-        Event.EventModel.find({attendees:req.session.account.username.toString()})
-          .exec((e, docs) => {
-            if(e) return res.json({error: e});
-            return res.json({events: docs});
-          });
-      });
+  if (req.query.sortBy) {
+    if (req.query.sortBy === 'date') {
+      Event.EventModel.find({ attendees: req.session.account.username.toString() })
+        .exec((e, docs) => {
+          if (e) return res.json({ error: e });
+          return res.json({ events: docs });
+        });
     }
-  }
-
-  else if (req.query.username) {
+  } else if (req.query.username) {
     Event.EventModel.find({ createdBy: req.query.username }, (err, docs) => {
       if (err) return res.json({ error: 'No Events Found' });
       return res.json({ events: docs });
@@ -92,11 +85,11 @@ const register = (req, res) => {
   }
 
   // Find the user
-  Account.AccountModel.findByUsername(req.session.account.username, (error, userDoc) => {
+  return Account.AccountModel.findByUsername(req.session.account.username, (error, userDoc) => {
     if (error) return res.status(400).json({ error: 'User not found' });
 
     // Find the event
-    Event.EventModel.findById(req.body._id, (err, eventDoc) => {
+    return Event.EventModel.findById(req.body._id, (err, eventDoc) => {
       if (err) return res.status(400).json({ error: 'Event not found' });
 
       // Save the docs as variables.
@@ -135,7 +128,7 @@ const register = (req, res) => {
       }).catch(() =>
         res.json({ message: registeredMessage }));
     });
-  });
+  }).catch((err) => res.json({ error: err }));
 };
 
 
@@ -143,11 +136,11 @@ const register = (req, res) => {
 const deleteEvent = (req, res) => {
   if (!req.body._id) return res.status(400).json({ error: 'Invalid Event. Try Again.' });
 
-  Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
+  return Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
     if (userError) return res.status(400).json({ error: 'Username not found' });
     const user = userDoc;
 
-    Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
+    return Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
       if (eventError) return res.json({ error: 'No event found.' });
 
       // Only let user delete if they made it
@@ -175,19 +168,18 @@ const deleteEvent = (req, res) => {
               Account.AccountModel.findByUsername(attendees[i], (err, doc) => {
                 if (err) return res.json({ error: err });
                 const tempUser = doc;
-
                 if (tempUser.events.includes(id.toString())) {
                   const temp = tempUser.events.filter(e => e !== id.toString());
                   tempUser.events = temp;
-                  tempUser.save();
                 }
+                return tempUser.save();
               });
             }
           }).catch((err) => res.json({ error: err }));
-          res.json({ message: 'Deleted Successfully' });
+          return res.json({ message: 'Deleted Successfully' });
         });
       }
-      res.json({ error: 'Event not associated with this account.' });
+      return res.json({ error: 'Event not associated with this account.' });
     });
   });
 };
@@ -197,11 +189,11 @@ const edit = (req, res) => {
   if (!req.body._id) return res.status(400).json({ error: 'Invalid Event. Try Again.' });
 
   // Find user
-  Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
+  return Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
     if (userError) return res.json({ error: userError });
     const user = userDoc; // Store the user
 
-    Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
+    return Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
       if (eventError) return res.json({ error: eventError });
       const event = eventDoc;
 
@@ -219,7 +211,7 @@ const edit = (req, res) => {
       event.address = req.body.address;
       event.date = req.body.date;
       event.desc = req.body.desc;
-      event.save().then(() => res.json({ redirect: '/profile', message: 'Event Updated.' }))
+      return event.save().then(() => res.json({ redirect: '/profile', message: 'Event Updated.' }))
       .catch((err) => res.json({ redirect: '/profile', error: err }));
     });
   });
@@ -231,3 +223,4 @@ module.exports.create = create;
 module.exports.register = register;
 module.exports.delete = deleteEvent;
 module.exports.edit = edit;
+

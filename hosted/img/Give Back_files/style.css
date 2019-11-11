@@ -141,8 +141,6 @@ a{
     background-color: #031D44;
     color:snow;
     font-size: 20px;
-    float:right;
-    margin-right:10%;
     cursor: pointer;
     transition: all .25s ease-in-out;
     display:inline-block;
@@ -171,16 +169,8 @@ a{
     float: right;
     width: 20%;
     margin: 0 10%;
-    margin-top: 80px;
+    margin-top: 50px;
     min-height: 150px;
-    background-color: #333333;
-    height:50vh;
-    overflow: scroll;
-}
-.noUpcoming {
-    text-align: center;
-    color:white;
-    font-family: sans-serif;
 }
 
 #events {
@@ -200,25 +190,6 @@ a{
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     background-color: #ffffff;
 }
-
-.upcomingEvent {
-    width:90%;
-    border-radius: 10px;
-    margin: 5%;
-    text-align: center;
-    background-color: #f5f5f5;
-    font-family: sans-serif;
-}
-.upcomingEvent h2 {
-    font-size: 12pt;
-}
-.upcomingHeader {
-    margin:0;
-    text-align: center;
-    background-color: #CE4257;
-    color:white;
-}
-
 .event img{
     grid-area: img;
     width:80%;

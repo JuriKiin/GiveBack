@@ -80,7 +80,7 @@ const EventList = (props) => {
         }
         let dateText = event.date.substring(0,event.date.indexOf('T'));
         return (
-            <div key={event.id} className='event'>
+            <div key={event._id} className='event'>
                 <img src='/assets/img/eventIcon.png' alt='event' className='eventImage' />
                 <h1>{event.name}</h1>
                 <p className='eventDate'>{dateText}</p>
@@ -97,6 +97,30 @@ const EventList = (props) => {
     );
 };
 
+const Upcoming = (props) => {
+    if(props.events.length === 0) {
+        return (
+            <div className="noUpcoming">No Upcoming Events</div>
+        );
+    }
+    const events = props.events.map((event) => {
+        let dateText = event.date.substring(0,event.date.indexOf('T'));
+        return (
+            <div key={event._id} className='upcomingEvent'>
+                <h1>{event.name}</h1>
+                <h2>{dateText}</h2>
+            </div>
+        );
+    });
+
+    return (
+        <div className="upcomingEvents">
+            <h1 className="upcomingHeader">Upcoming Events</h1>
+            {events}
+        </div>
+    )
+};
+
 const loadEvents = (csrf, username) => {
     sendAjax('GET', '/events', null, (data) => {
         //console.log(data);
@@ -104,6 +128,15 @@ const loadEvents = (csrf, username) => {
             <EventList events={data.events} csrf={csrf} username={username}/>,
             document.getElementById('events')
         );
+
+        //Now get upcoming events
+        sendAjax('GET','/events?sortBy=date', null, (upcoming) => {
+            console.log(upcoming);
+            ReactDOM.render(
+                <Upcoming events={upcoming.events} csrf={csrf} username={username} />,
+                document.getElementById('upcoming')
+            )
+        });
     });
 };
 
