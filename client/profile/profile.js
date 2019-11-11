@@ -30,7 +30,7 @@ const loadEvents = (csrf, username) => {
     sendAjax('GET', `/events?username=${username}`, null, (data) => {
         ReactDOM.render(
             <EventList events={data.events} csrf={csrf} username={username}/>,
-            document.getElementById('events')
+            document.getElementById('yourEvents')
         );
     });
 };
@@ -49,7 +49,11 @@ const deleteEvent = (event, csrf, username) => {
 const EventList = (props) => {
     if(props.events.length === 0) {
         return (
-            <div><h1 className="noEvents">You haven't made any events yet!</h1></div>
+            <div className="noEvents">
+                <h1>You haven't made any events yet!</h1>
+                <h2>Want to create one?</h2>
+                <input type='button' id="createButton" onClick={create.bind(this,props.username).bind(this,props.csrf)} className="createButton" value="Create" />
+            </div>
         );
     }
     const events = props.events.map((event) => {
@@ -72,3 +76,43 @@ const EventList = (props) => {
 };
 
 
+const create = () => {
+    $('#searchButton').css('display','none');
+    sendAjax('GET', '/getToken', null, (result) => {
+        ReactDOM.render(
+            <CreateForm csrf={result.csrfToken} />,
+            document.getElementById('yourEvents')
+        );
+    });
+};
+
+const handleCreate = (e) => {
+    e.preventDefault();
+    if($('#name').val() == '' || $('#address').val() == '' || $('#desc').val() == '') {
+        showToast("All fields are required");
+        return false;
+    }
+    $('#searchButton').css('display','block');
+    sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), redirect);
+};
+
+const CreateForm = (props) => {
+    return (
+        <form id="createForm" name="createForm"
+                onSubmit={handleCreate}
+                action="/create"
+                method="POST"
+                className="createForm"
+            >
+            <h1>Create an event.</h1>
+            <input id="name" type="text" name="name" placeholder="Event Name" />
+            <input id="address" type="text" name="address" placeholder="Event Address" />
+            <input type='date' name="date"/>
+            <textarea placeholder="Event Description" id='desc' name="desc">
+
+            </textarea>
+            <input type="hidden" name="_csrf" value={props.csrf} />
+            <input className="submit" type="submit" value="Create" />
+        </form>
+    );
+};

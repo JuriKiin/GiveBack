@@ -133,16 +133,21 @@ a{
     margin: 0 10%;
 }
 
-#search input[type='button'] {
+.createButton {
     width: 250px;
     padding: 15px;
     border-radius: 40px;
     border:none;
-    background-color: #FFF400;
+    background-color: #031D44;
+    color:snow;
     font-size: 20px;
     cursor: pointer;
     transition: all .25s ease-in-out;
-    margin-left: 20%;
+    display:inline-block;
+    transition: all .25s ease-in-out;
+}
+.createButton:hover{
+    transform: scale(1.05);
 }
 
 #search input[type='button']:hover {
@@ -151,8 +156,13 @@ a{
 
 /* ------- EVENTS ------ */
 .noEvents {
-    font-family: sans-serif;
     text-align: center;
+}
+.noEvents h1{
+    font-family: sans-serif;
+    font-weight: normal;
+    margin: 50px 0;
+    font-family: sans-serif;
 }
 
 
@@ -285,6 +295,7 @@ a{
     padding: 5%;
     margin-top: -5%;
 }
+
 .createForm h1 {
     font-family: sans-serif;
 }
@@ -321,4 +332,10 @@ a{
     background-color: #df3434;
     color:white;
     cursor: pointer;
+}
+
+#yourEvents {
+    width: 60%;
+    margin: 0 20%;
+    margin-top: 100px;
 }

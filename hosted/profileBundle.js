@@ -30,7 +30,7 @@ var Greeting = function Greeting(props) {
 
 var loadEvents = function loadEvents(csrf, username) {
     sendAjax('GET', '/events?username=' + username, null, function (data) {
-        ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('events'));
+        ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('yourEvents'));
     });
 };
 
@@ -49,12 +49,18 @@ var EventList = function EventList(props) {
     if (props.events.length === 0) {
         return React.createElement(
             'div',
-            null,
+            { className: 'noEvents' },
             React.createElement(
                 'h1',
-                { className: 'noEvents' },
+                null,
                 'You haven\'t made any events yet!'
-            )
+            ),
+            React.createElement(
+                'h2',
+                null,
+                'Want to create one?'
+            ),
+            React.createElement('input', { type: 'button', id: 'createButton', onClick: create.bind(undefined, props.username).bind(undefined, props.csrf), className: 'createButton', value: 'Create' })
         );
     }
     var events = props.events.map(function (event) {
@@ -89,6 +95,46 @@ var EventList = function EventList(props) {
         'div',
         { className: 'eventList' },
         events
+    );
+};
+
+var create = function create() {
+    $('#searchButton').css('display', 'none');
+    sendAjax('GET', '/getToken', null, function (result) {
+        ReactDOM.render(React.createElement(CreateForm, { csrf: result.csrfToken }), document.getElementById('yourEvents'));
+    });
+};
+
+var handleCreate = function handleCreate(e) {
+    e.preventDefault();
+    if ($('#name').val() == '' || $('#address').val() == '' || $('#desc').val() == '') {
+        showToast("All fields are required");
+        return false;
+    }
+    $('#searchButton').css('display', 'block');
+    sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), redirect);
+};
+
+var CreateForm = function CreateForm(props) {
+    return React.createElement(
+        'form',
+        { id: 'createForm', name: 'createForm',
+            onSubmit: handleCreate,
+            action: '/create',
+            method: 'POST',
+            className: 'createForm'
+        },
+        React.createElement(
+            'h1',
+            null,
+            'Create an event.'
+        ),
+        React.createElement('input', { id: 'name', type: 'text', name: 'name', placeholder: 'Event Name' }),
+        React.createElement('input', { id: 'address', type: 'text', name: 'address', placeholder: 'Event Address' }),
+        React.createElement('input', { type: 'date', name: 'date' }),
+        React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc' }),
+        React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+        React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' })
     );
 };
 "use strict";
