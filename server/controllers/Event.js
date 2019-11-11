@@ -87,13 +87,13 @@ const register = (req, res) => {
       // Save the docs as variables.
       const user = userDoc;
       const event = eventDoc;
-      let registeredMessage = "Registered.";
+      let registeredMessage = 'Registered.';
 
       // If our user is in the list of attendees,
       if (event.attendees.includes(user.username)) {
         // Remove the event from our account object.
         if (user.events.includes(event._id.toString())) {
-          registeredMessage = "Unregistered."
+          registeredMessage = 'Unregistered.';
           const temp = user.events.filter(e => e !== event._id.toString());
           user.events = temp; // Reset our user events.
         }
@@ -177,35 +177,35 @@ const deleteEvent = (req, res) => {
   });
 };
 
-//Edit an existing event
+// Edit an existing event
 const edit = (req, res) => {
   if (!req.body._id) return res.status(400).json({ error: 'Invalid Event. Try Again.' });
 
-  //Find user
+  // Find user
   Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
-    if(userError) return res.json({error: userError});
-    let user = userDoc; //Store the user
+    if (userError) return res.json({ error: userError });
+    const user = userDoc; // Store the user
 
     Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
-      if(eventError) return res.json({error: eventError});
-      let event = eventDoc;
+      if (eventError) return res.json({ error: eventError });
+      const event = eventDoc;
 
-      //Check if our session's account is the same as the event's author (security)
-      if(event.createdBy !== user.username) return res.json({error: "Event not associated with this account."});
+      // Check if our session's account is the same as the event's author (security)
+      if (event.createdBy !== user.username) {
+        return res.json({ error: 'Event not associated with this account.' });
+      }
 
-      //Make sure we have all valid fields
-      if(!req.body.name || !req.body.address || !req.body.date || !req.body.desc) 
-        return res.json({error: "All fields are required"});
+      // Make sure we have all valid fields
+      if (!req.body.name || !req.body.address || !req.body.date || !req.body.desc) {
+        return res.json({ error: 'All fields are required' });
+      }
 
       event.name = req.body.name;
       event.address = req.body.address;
       event.date = req.body.date;
       event.desc = req.body.desc;
-      event.save().then(() => {
-        return res.json({redirect: '/profile', message: "Event Updated."});
-      }).catch((err) => {
-        return res.json({redirect: '/profile', error: "Unable to update event."})
-      });
+      event.save().then(() => res.json({ redirect: '/profile', message: 'Event Updated.' }))
+      .catch((err) => res.json({ redirect: '/profile', error: err }));
     });
   });
 };
