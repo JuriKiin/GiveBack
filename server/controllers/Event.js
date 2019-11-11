@@ -15,7 +15,6 @@ const getEvents = (req, res) => {
 
       Account.AccountModel.findByUsername(req.session.account.username, (err, userDoc) => {
         if(err) return res.json({error: err});
-        let user = userDoc;
 
         Event.EventModel.find({attendees:req.session.account.username.toString()})
           .exec((e, docs) => {
