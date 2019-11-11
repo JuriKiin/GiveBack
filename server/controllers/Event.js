@@ -10,9 +10,23 @@ const getEvents = (req, res) => {
   if (req.query.limit) limitSize = req.query.limit;
   else limitSize = 10;
 
-  console.log(req.query.name);
+  if(req.query.sortBy) {
+    if(req.query.sortBy === "date") {
 
-  if (req.query.username) {
+      Account.AccountModel.findByUsername(req.session.account.username, (err, userDoc) => {
+        if(err) return res.json({error: err});
+        let user = userDoc;
+
+        Event.EventModel.find({attendees:req.session.account.username.toString()})
+          .exec((e, docs) => {
+            if(e) return res.json({error: e});
+            return res.json({events: docs});
+          });
+      });
+    }
+  }
+
+  else if (req.query.username) {
     Event.EventModel.find({ createdBy: req.query.username }, (err, docs) => {
       if (err) return res.json({ error: 'No Events Found' });
       return res.json({ events: docs });

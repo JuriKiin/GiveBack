@@ -56,11 +56,12 @@ const EventList = (props) => {
         );
     }
     const events = props.events.map((event) => {
+        let dateText = event.date.substring(0,event.date.indexOf('T'));
         return (
             <div key={event.id} className='event'>
                 <img src='/assets/img/eventIcon.png' alt='event' className='eventImage' />
                 <h1>{event.name}</h1>
-                <p className='eventDate'>{event.date}</p>
+                <p className='eventDate'>{dateText}</p>
                 <p className='eventDesc'>{event.desc}</p>
                 <input className="author" type="button" onClick={edit.bind(this,event).bind(this,props.csrf)} value="Edit" />
                 <input className="deleteButton" type='button' onClick={deleteEvent.bind(this,event).bind(this,props.csrf).bind(this, props.username)} value="Delete" />

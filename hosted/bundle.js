@@ -88,7 +88,7 @@ var EventList = function EventList(props) {
                 }
             });
         }
-
+        var dateText = event.date.substring(0, event.date.indexOf('T'));
         return React.createElement(
             'div',
             { key: event.id, className: 'event' },
@@ -101,7 +101,7 @@ var EventList = function EventList(props) {
             React.createElement(
                 'p',
                 { className: 'eventDate' },
-                event.date
+                dateText
             ),
             React.createElement(
                 'p',
@@ -125,7 +125,7 @@ var EventList = function EventList(props) {
 
 var loadEvents = function loadEvents(csrf, username) {
     sendAjax('GET', '/events', null, function (data) {
-        console.log(data);
+        //console.log(data);
         ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('events'));
     });
 };
@@ -135,7 +135,6 @@ var search = function search(e) {
     sendAjax('GET', '/getToken', null, function (result) {
         sendAjax('GET', '/user', null, function (data) {
             sendAjax('GET', '/events?name=' + e.value, null, function (events) {
-                console.log(events);
                 if (events.events.length === 0) {
                     ReactDOM.render(React.createElement(
                         'div',
@@ -153,10 +152,14 @@ var search = function search(e) {
 var setup = function setup(csrf) {
     var username = '';
     sendAjax('GET', '/user', null, function (data) {
-        console.log(data);
+        //console.log(data);
         username = data.username;
         ReactDOM.render(React.createElement(Greeting, { csrf: csrf, username: username }), document.getElementById('greeting'));
         loadEvents(csrf, username);
+    });
+
+    sendAjax('GET', '/events?sortBy=date', null, function (data) {
+        console.log(data);
     });
 };
 

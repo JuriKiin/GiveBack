@@ -63,6 +63,7 @@ var EventList = function EventList(props) {
         );
     }
     var events = props.events.map(function (event) {
+        var dateText = event.date.substring(0, event.date.indexOf('T'));
         return React.createElement(
             'div',
             { key: event.id, className: 'event' },
@@ -75,7 +76,7 @@ var EventList = function EventList(props) {
             React.createElement(
                 'p',
                 { className: 'eventDate' },
-                event.date
+                dateText
             ),
             React.createElement(
                 'p',

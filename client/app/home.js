@@ -78,12 +78,12 @@ const EventList = (props) => {
                 }
             });
         }
-
+        let dateText = event.date.substring(0,event.date.indexOf('T'));
         return (
             <div key={event.id} className='event'>
                 <img src='/assets/img/eventIcon.png' alt='event' className='eventImage' />
                 <h1>{event.name}</h1>
-                <p className='eventDate'>{event.date}</p>
+                <p className='eventDate'>{dateText}</p>
                 <p className='eventDesc'>{event.desc}</p>
                 <input disabled={event.createdBy === props.username} className={buttonClass} type='button' onClick={register.bind(this,event).bind(this,props.csrf).bind(this,props.username)} value={buttonText} />
                 <p className='author'>{event.createdBy}</p>
@@ -138,6 +138,10 @@ const setup = function(csrf) {
             document.getElementById('greeting')
         );
         loadEvents(csrf, username);
+    });
+
+    sendAjax('GET', '/events?sortBy=date', null, (data) => {
+        console.log(data);
     });
 };
 
