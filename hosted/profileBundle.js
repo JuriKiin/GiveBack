@@ -35,7 +35,6 @@ var loadEvents = function loadEvents(csrf, username) {
 };
 
 var deleteEvent = function deleteEvent(event, csrf, username) {
-    console.log(event);
     event._csrf = csrf;
     sendAjax('POST', '/delete', event, function (data) {
         showToast(data.message);
@@ -83,12 +82,8 @@ var EventList = function EventList(props) {
                 { className: 'eventDesc' },
                 event.desc
             ),
-            React.createElement('input', { className: 'deleteButton', type: 'button', onClick: deleteEvent.bind(undefined, event).bind(undefined, props.csrf).bind(undefined, props.username), value: 'Delete' }),
-            React.createElement(
-                'p',
-                { className: 'author' },
-                event.createdBy
-            )
+            React.createElement('input', { className: 'author', type: 'button', onClick: edit.bind(undefined, event).bind(undefined, props.csrf), value: 'Edit' }),
+            React.createElement('input', { className: 'deleteButton', type: 'button', onClick: deleteEvent.bind(undefined, event).bind(undefined, props.csrf).bind(undefined, props.username), value: 'Delete' })
         );
     });
     return React.createElement(
@@ -115,27 +110,66 @@ var handleCreate = function handleCreate(e) {
     sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), redirect);
 };
 
+var handleEdit = function handleEdit(e) {
+    e.preventDefault();
+    if ($('#name').val() == '' || $('#address').val() == '' || $('#desc').val() == '') {
+        showToast("All fields are required");
+        return false;
+    }
+    sendAjax('POST', $('#createForm').attr("action"), $('#createForm').serialize(), redirect);
+};
+
 var CreateForm = function CreateForm(props) {
-    return React.createElement(
-        'form',
-        { id: 'createForm', name: 'createForm',
-            onSubmit: handleCreate,
-            action: '/create',
-            method: 'POST',
-            className: 'createForm'
-        },
-        React.createElement(
-            'h1',
-            null,
-            'Create an event.'
-        ),
-        React.createElement('input', { id: 'name', type: 'text', name: 'name', placeholder: 'Event Name' }),
-        React.createElement('input', { id: 'address', type: 'text', name: 'address', placeholder: 'Event Address' }),
-        React.createElement('input', { type: 'date', name: 'date' }),
-        React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc' }),
-        React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-        React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' })
-    );
+
+    if (props.event) {
+        var dateText = props.event.date.substring(0, props.event.date.indexOf('T'));
+        return React.createElement(
+            'form',
+            { id: 'createForm', name: 'createForm',
+                onSubmit: handleEdit,
+                action: '/edit',
+                method: 'POST',
+                className: 'createForm'
+            },
+            React.createElement(
+                'h1',
+                null,
+                'Create an event.'
+            ),
+            React.createElement('input', { id: 'name', type: 'text', name: 'name', placeholder: 'Event Name', defaultValue: props.event.name }),
+            React.createElement('input', { id: 'address', type: 'text', name: 'address', placeholder: 'Event Address', defaultValue: props.event.address }),
+            React.createElement('input', { type: 'date', name: 'date', defaultValue: dateText }),
+            React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc', defaultValue: props.event.desc }),
+            React.createElement('input', { type: 'hidden', name: '_csrf', defaultValue: props.csrf }),
+            React.createElement('input', { type: 'hidden', name: '_id', defaultValue: props.event._id }),
+            React.createElement('input', { className: 'submit', type: 'submit', defaultValue: 'Update' })
+        );
+    } else {
+        return React.createElement(
+            'form',
+            { id: 'createForm', name: 'createForm',
+                onSubmit: handleCreate,
+                action: '/create',
+                method: 'POST',
+                className: 'createForm'
+            },
+            React.createElement(
+                'h1',
+                null,
+                'Create an event.'
+            ),
+            React.createElement('input', { id: 'name', type: 'text', name: 'name', placeholder: 'Event Name' }),
+            React.createElement('input', { id: 'address', type: 'text', name: 'address', placeholder: 'Event Address' }),
+            React.createElement('input', { type: 'date', name: 'date' }),
+            React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc' }),
+            React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+            React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' })
+        );
+    }
+};
+
+var edit = function edit(event, csrf) {
+    ReactDOM.render(React.createElement(CreateForm, { csrf: csrf, event: event }), document.getElementById('yourEvents'));
 };
 "use strict";
 
