@@ -15,6 +15,7 @@ var setup = function setup(csrf) {
     sendAjax('GET', '/user', null, function (data) {
         username = data.username;
         ReactDOM.render(React.createElement(Greeting, { csrf: csrf, username: username }), document.getElementById('greeting'));
+        changePassword(csrf);
         loadEvents(csrf, username);
     });
 };
@@ -39,6 +40,17 @@ var deleteEvent = function deleteEvent(event, csrf, username) {
     sendAjax('POST', '/delete', event, function (data) {
         showToast(data.message);
         loadEvents(csrf, username);
+    });
+};
+
+var handleChange = function handleChange(e) {
+    e.preventDefault();
+    if ($('#current').val() == '' || $('#new1').val() == '' || $('#new2').val() == '') {
+        showToast("All fields are required");
+        return false;
+    }
+    sendAjax('POST', $('#password').attr("action"), $('#password').serialize(), function (data) {
+        showToast(data.message);
     });
 };
 
@@ -181,6 +193,32 @@ var CreateForm = function CreateForm(props) {
 
 var edit = function edit(event, csrf) {
     ReactDOM.render(React.createElement(CreateForm, { csrf: csrf, event: event }), document.getElementById('yourEvents'));
+};
+
+var changePassword = function changePassword(csrf) {
+    ReactDOM.render(React.createElement(PasswordForm, { csrf: csrf }), document.getElementById('passwordForm'));
+};
+
+var PasswordForm = function PasswordForm(props) {
+    return React.createElement(
+        'form',
+        { id: 'password', name: 'passwordForm',
+            onSubmit: handleChange,
+            action: '/password',
+            method: 'POST',
+            className: 'passwordForm'
+        },
+        React.createElement(
+            'h1',
+            null,
+            'Change Password:'
+        ),
+        React.createElement('input', { type: 'password', name: 'current', placeholder: 'Current Password', id: 'current' }),
+        React.createElement('input', { type: 'password', name: 'newPassword', placeholder: 'New Password', id: 'new1' }),
+        React.createElement('input', { type: 'password', name: 'newPasswordAgain', placeholder: 'Retype New Password', id: 'new2' }),
+        React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+        React.createElement('input', { className: 'buttonRegister', type: 'submit', value: 'Change' })
+    );
 };
 "use strict";
 

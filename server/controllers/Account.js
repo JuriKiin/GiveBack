@@ -11,7 +11,7 @@ const profilePage = (req, res) => {
 };
 
 const notFound = (req, res) => {
-  res.render('missing', {csrfToken: req.csrfToken()});
+  res.render('missing', { csrfToken: req.csrfToken() });
 };
 
 const logout = (req, res) => {
@@ -67,6 +67,34 @@ const signup = (req, res) => {
   });
 };
 
+// Change the user password.
+const changePassword = (req, res) => {
+  console.log("HERE IN SERVER");
+  // Check to see if we've provided password and password retyped
+  if (!req.body.newPassword || !req.body.newPasswordAgain) {
+    return res.status(400).json({ error: 'All fields are required.' });
+  }
+  // Check to see if the passwords match
+  if (req.body.newPassword !== req.body.newPasswordAgain) {
+    return res.status(400).json({ error: 'Passwords do not match' });
+  }
+
+  // Get the user from the current session
+  return Account.AccountModel.authenticate(req.session.account.username, req.body.current,
+      (err, doc) => {
+        console.log(doc);
+        if (err) return res.status(400).json({ error: err });
+
+        const user = doc;
+    // Generage a new hash with the new password
+        return Account.AccountModel.generateHash(req.body.newPassword, (salt, hash) => {
+          user.salt = salt;
+          user.password = hash;
+          return user.save().then(() => res.json({ message: 'Password Changed Successfully' }));
+        });
+      });
+};
+
 
 const getUser = (req, res) =>
   Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
@@ -95,3 +123,4 @@ module.exports.logout = logout;
 module.exports.getToken = getToken;
 module.exports.getUser = getUser;
 module.exports.notFound = notFound;
+module.exports.changePassword = changePassword;

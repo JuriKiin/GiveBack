@@ -16,6 +16,7 @@ const setup = function(csrf) {
             <Greeting csrf={csrf} username={username}/>,
             document.getElementById('greeting')
         );
+        changePassword(csrf);
         loadEvents(csrf, username);
     });
 };
@@ -40,6 +41,17 @@ const deleteEvent = (event, csrf, username) => {
     sendAjax('POST', '/delete', event, (data) => {
         showToast(data.message);
         loadEvents(csrf, username);
+    });
+};
+
+const handleChange = (e) => {
+    e.preventDefault();
+    if($('#current').val() == '' || $('#new1').val() == '' || $('#new2').val() == '') {
+        showToast("All fields are required");
+        return false;
+    }
+    sendAjax('POST', $('#password').attr("action"), $('#password').serialize(), (data) => {
+        showToast(data.message);
     });
 };
 
@@ -156,5 +168,30 @@ const edit = (event, csrf) => {
     ReactDOM.render(
         <CreateForm csrf={csrf} event={event} />,
         document.getElementById('yourEvents')
+    );
+};
+
+const changePassword = (csrf) => {
+    ReactDOM.render(
+        <PasswordForm csrf={csrf} />,
+        document.getElementById('passwordForm')
+    );
+};
+
+const PasswordForm = (props) => {
+    return (
+        <form id="password" name="passwordForm"
+            onSubmit={handleChange}
+            action='/password'
+            method="POST"
+            className="passwordForm"
+        >
+            <h1>Change Password:</h1>
+            <input type="password" name="current" placeholder="Current Password" id='current'/>
+            <input type="password" name="newPassword" placeholder="New Password" id='new1'/>
+            <input type="password" name="newPasswordAgain" placeholder="Retype New Password" id='new2'/>
+            <input type="hidden" name="_csrf" value={props.csrf} />
+            <input className="buttonRegister" type="submit" value="Change" />
+        </form>
     );
 };
