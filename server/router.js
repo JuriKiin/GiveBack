@@ -16,6 +16,7 @@ const router = (app) => {
   app.post('/delete', mid.requiresLogin, controllers.Event.delete);
   app.post('/edit', mid.requiresLogin, controllers.Event.edit);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
+  app.get('*', mid.requiresLogin, controllers.Account.notFound);
 };
 
 module.exports = router;

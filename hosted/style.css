@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Big+Shoulders+Text:300,400|Raleway&display=swap');
+
+:root {
+    --header-font: 'Big Shoulders Text', cursive;
+    --text-font: 'Raleway', sans-serif;
+    --box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
 html, body {
     height: 100%;
     width: 100%;
@@ -25,10 +33,16 @@ body {
 }
 .nav-item{
     display:inline;
+    text-align: center;
     padding: 10px 30px;
     color:#031D44;
     font-weight: bold;
-    font-family: sans-serif;
+    font-family: var(--text-font);
+    transition: all .2s ease-in-out;
+    border-color: #FFF400;
+}
+.nav-item:hover {
+    border-bottom: 5px solid #FFF400;
 }
 
 a{
@@ -134,21 +148,24 @@ a{
 }
 
 .createButton {
-    width: 250px;
+    float:right;
+    margin-right: 10%;
+    display:inline-block;
+
+}
+.createButton, .profileCreateButton {
+    width:250px;
     padding: 15px;
     border-radius: 40px;
-    border:none;
+    border: none;
     background-color: #031D44;
-    color:snow;
+    color: white;
     font-size: 20px;
-    float:right;
-    margin-right:10%;
-    cursor: pointer;
-    transition: all .25s ease-in-out;
-    display:inline-block;
+    cursor: pointer;    
     transition: all .25s ease-in-out;
 }
-.createButton:hover{
+
+.createButton:hover, .profileCreateButton:hover {
     transform: scale(1.05);
 }
 
@@ -161,10 +178,12 @@ a{
     text-align: center;
 }
 .noEvents h1{
-    font-family: sans-serif;
+    font-family: var(--text-font);
     font-weight: normal;
     margin: 50px 0;
-    font-family: sans-serif;
+}
+.noEvents h2 {
+    font-family: var(--text-font);
 }
 
 #upcoming{
@@ -173,14 +192,15 @@ a{
     margin: 0 10%;
     margin-top: 80px;
     min-height: 150px;
-    background-color: #333333;
+    background-color: #dddddd;
+    border-radius: 10px;
     height:50vh;
     overflow: scroll;
 }
 .noUpcoming {
     text-align: center;
     color:white;
-    font-family: sans-serif;
+    font-family: var(--header-font);
 }
 
 #events {
@@ -197,17 +217,19 @@ a{
         "img date author"
         "img desc desc";
     margin: 5% 0;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: var(--box-shadow);
     background-color: #ffffff;
+    font-family: var(--text-font);
 }
 
 .upcomingEvent {
     width:90%;
     border-radius: 10px;
     margin: 5%;
+    padding: 5px 0;
     text-align: center;
     background-color: #f5f5f5;
-    font-family: sans-serif;
+    font-family: var(--text-font);
 }
 .upcomingEvent h2 {
     font-size: 12pt;
@@ -217,6 +239,8 @@ a{
     text-align: center;
     background-color: #CE4257;
     color:white;
+    padding: 10px;
+    font-family: var(--header-font);
 }
 
 .event img{
@@ -227,7 +251,6 @@ a{
 }
 .event h1 {
     grid-area: title;
-    font-family: sans-serif;
 }
 .eventDate{
     grid-area: date;
@@ -241,6 +264,19 @@ a{
 .author{
     grid-area: author;
     justify-self: center;
+}
+
+.genericButton {
+    padding: 10px;
+    border:none;
+    margin: 10px;
+    background-color: #df3434;
+    color:white;
+    text-align: center;
+    width: 60%;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all .25s ease-in-out;
 }
 
 .buttonRegister, .buttonGoing, .buttonCreated, .deleteButton {
@@ -258,7 +294,7 @@ a{
     transition: all .25s ease-in-out;
 }
 
-.buttonRegister:hover, .buttonGoing:hover, .deleteButton:hover {
+.buttonRegister:hover, .buttonGoing:hover, .deleteButton:hover, .genericButton:hover {
     transform: scale(1.05);
 }
 
@@ -292,7 +328,7 @@ a{
     z-index: 1; /* Add a z-index if needed */
     left: 50%; /* Center the snackbar */
     bottom: 30px; /* 30px from the bottom */
-    font-family: sans-serif;
+    font-family: var(--text-font);
   }
   
   /* Show the snackbar when clicking on a button (class added with JavaScript) */
@@ -327,14 +363,19 @@ a{
 
 /* Create Form */
 .createForm {
-    margin: 0 20%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    padding: 25px;
+    transform: translate(-50%, -50%);
+    box-shadow: var(--box-shadow);
     width: 60%;
-    padding: 5%;
-    margin-top: -5%;
+    background-color: #ffffff;
 }
 
 .createForm h1 {
-    font-family: sans-serif;
+    font-family: var(--text-font);
 }
 .createForm input[type="text"] {
     padding: 20px;

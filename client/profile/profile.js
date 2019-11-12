@@ -51,7 +51,7 @@ const EventList = (props) => {
             <div className="noEvents">
                 <h1>You haven't made any events yet!</h1>
                 <h2>Want to create one?</h2>
-                <input type='button' id="createButton" onClick={create.bind(this,props.username).bind(this,props.csrf)} className="createButton" value="Create" />
+                <input type='button' id="createButton" onClick={create.bind(this,props.username).bind(this,props.csrf)} className="profileCreateButton" value="Create" />
             </div>
         );
     }
@@ -81,7 +81,7 @@ const create = () => {
     sendAjax('GET', '/getToken', null, (result) => {
         ReactDOM.render(
             <CreateForm csrf={result.csrfToken} />,
-            document.getElementById('yourEvents')
+            document.getElementById('createModal')
         );
     });
 };
@@ -126,6 +126,7 @@ const CreateForm = (props) => {
                 <input type="hidden" name="_csrf" defaultValue={props.csrf} />
                 <input type="hidden" name="_id" defaultValue={props.event._id} />
                 <input className="submit" type="submit" defaultValue="Update" />
+                <button onClick={close.bind(this, 'createModal')}>Cancel</button>
             </form>
         );
     } else {
@@ -145,6 +146,7 @@ const CreateForm = (props) => {
                 </textarea>
                 <input type="hidden" name="_csrf" value={props.csrf} />
                 <input className="submit" type="submit" value="Create" />
+                <button onClick={close.bind(this, 'createModal')}>Cancel</button>
             </form>
         );
     }

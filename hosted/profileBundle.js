@@ -59,7 +59,7 @@ var EventList = function EventList(props) {
                 null,
                 'Want to create one?'
             ),
-            React.createElement('input', { type: 'button', id: 'createButton', onClick: create.bind(undefined, props.username).bind(undefined, props.csrf), className: 'createButton', value: 'Create' })
+            React.createElement('input', { type: 'button', id: 'createButton', onClick: create.bind(undefined, props.username).bind(undefined, props.csrf), className: 'profileCreateButton', value: 'Create' })
         );
     }
     var events = props.events.map(function (event) {
@@ -97,7 +97,7 @@ var EventList = function EventList(props) {
 var create = function create() {
     $('#searchButton').css('display', 'none');
     sendAjax('GET', '/getToken', null, function (result) {
-        ReactDOM.render(React.createElement(CreateForm, { csrf: result.csrfToken }), document.getElementById('yourEvents'));
+        ReactDOM.render(React.createElement(CreateForm, { csrf: result.csrfToken }), document.getElementById('createModal'));
     });
 };
 
@@ -143,7 +143,12 @@ var CreateForm = function CreateForm(props) {
             React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc', defaultValue: props.event.desc }),
             React.createElement('input', { type: 'hidden', name: '_csrf', defaultValue: props.csrf }),
             React.createElement('input', { type: 'hidden', name: '_id', defaultValue: props.event._id }),
-            React.createElement('input', { className: 'submit', type: 'submit', defaultValue: 'Update' })
+            React.createElement('input', { className: 'submit', type: 'submit', defaultValue: 'Update' }),
+            React.createElement(
+                'button',
+                { onClick: close.bind(undefined, 'createModal') },
+                'Cancel'
+            )
         );
     } else {
         return React.createElement(
@@ -164,7 +169,12 @@ var CreateForm = function CreateForm(props) {
             React.createElement('input', { type: 'date', name: 'date' }),
             React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc' }),
             React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-            React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' })
+            React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' }),
+            React.createElement(
+                'button',
+                { onClick: close.bind(undefined, 'createModal') },
+                'Cancel'
+            )
         );
     }
 };
@@ -206,4 +216,8 @@ var showToast = function showToast(message) {
     setTimeout(function () {
         toast.className = toast.className.replace("show", "");
     }, 3000);
+};
+
+var close = function close(id) {
+    document.getElementById(id).innerHTML = "";
 };

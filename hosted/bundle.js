@@ -12,7 +12,7 @@ var Greeting = function Greeting(props) {
 var create = function create() {
     $('#searchButton').css('display', 'none');
     sendAjax('GET', '/getToken', null, function (result) {
-        ReactDOM.render(React.createElement(CreateForm, { csrf: result.csrfToken }), document.getElementById('events'));
+        ReactDOM.render(React.createElement(CreateForm, { csrf: result.csrfToken }), document.getElementById('createModal'));
     });
 };
 
@@ -45,12 +45,13 @@ var CreateForm = function CreateForm(props) {
         React.createElement('input', { type: 'date', name: 'date' }),
         React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc' }),
         React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-        React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' })
+        React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' }),
+        React.createElement(
+            'button',
+            { className: 'align-center', onClick: close.bind(undefined, 'createModal') },
+            'Cancel'
+        )
     );
-};
-
-var closeCreateForm = function closeCreateForm() {
-    console.log("Closing form");
 };
 
 var register = function register(event, csrf, username) {
@@ -145,6 +146,11 @@ var Upcoming = function Upcoming(props) {
                 'h2',
                 null,
                 dateText
+            ),
+            React.createElement(
+                'button',
+                { className: 'genericButton', onClick: register.bind(undefined, event).bind(undefined, props.csrf).bind(undefined, props.username) },
+                'Unregister'
             )
         );
     });
@@ -250,4 +256,8 @@ var showToast = function showToast(message) {
     setTimeout(function () {
         toast.className = toast.className.replace("show", "");
     }, 3000);
+};
+
+var close = function close(id) {
+    document.getElementById(id).innerHTML = "";
 };

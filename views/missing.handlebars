@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <title>Give Back | Profile</title>
+  <title>Give Back | 404</title>
   <script crossorigin src="https://unpkg.com/react@15/dist/react.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
   <script crossorigin src="https://unpkg.com/prop-types/prop-types.min.js"></script>
@@ -12,20 +12,18 @@
   <link rel="stylesheet" href="https://jurikiin.com/KiinStyles/css/kiinStyle.css">
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
-<body>
-  <header class='header-grid'>
-    <span id='greeting' class='font-header font-sm margin-left-5 bold'></span>
-    <a class='' href='/login'><img src='/assets/img/logo.png' alt='logo' width="50" height="50" /></a>
-    <ul class='list-clear'>
-      <li class='d-inline pad-left-10 pad-right-10 nav-item'><a href='/home'>Home</a></li>
-      <li class='d-inline nav-item'><a href='/logout'>Logout</a></li>
-    </ul>
-  </header>
-  <h1 class='profileHeader font-header'>Your Events</h1>
-  <section id="yourEvents"></section>
-  <section id='createModal'></section>
+<body class='body-gradient'> 
+  <div>
+    <img class='app-logo margin-left-5 f-left' src='/assets/img/logo.png' alt='App logo' />
+  </div>
 
-  <div id="snackbar"></div>
-  <script src="/assets/profileBundle.js"></script>
+  <div class='center pad-5 bg-snow font-header'>
+    <h1>Oops! Something went wrong.</h1>
+    <h2>We can't find what you were looking for.</h2>
+    <p class=' align-center margin-left-25 margin-right-25 margin-top-5 bor-none bg-silk rad-10p pad-10p snow pointer zoom'><a href='/home'>Return Home</a></p>
+  </div>
+
+  <p class='footer fixed font-text'>&copy; 2019 | Give Back</p>
+  <div id="snackbar">Some text some message..</div>
 </body>
 </html>

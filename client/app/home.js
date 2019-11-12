@@ -9,7 +9,7 @@ const create = () => {
     sendAjax('GET', '/getToken', null, (result) => {
         ReactDOM.render(
             <CreateForm csrf={result.csrfToken} />,
-            document.getElementById('events')
+            document.getElementById('createModal')
         );
     });
 };
@@ -41,12 +41,9 @@ const CreateForm = (props) => {
             </textarea>
             <input type="hidden" name="_csrf" value={props.csrf} />
             <input className="submit" type="submit" value="Create" />
+            <button className="align-center" onClick={close.bind(this, 'createModal')}>Cancel</button>
         </form>
     );
-};
-
-const closeCreateForm = () => {
-    console.log("Closing form");
 };
 
 const register = (event, csrf, username) => {
@@ -109,6 +106,7 @@ const Upcoming = (props) => {
             <div key={event._id} className='upcomingEvent'>
                 <h1>{event.name}</h1>
                 <h2>{dateText}</h2>
+                <button className="genericButton" onClick={register.bind(this,event).bind(this,props.csrf).bind(this,props.username)}>Unregister</button>
             </div>
         );
     });

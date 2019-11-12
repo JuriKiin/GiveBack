@@ -140,3 +140,7 @@ var showToast = function showToast(message) {
         toast.className = toast.className.replace("show", "");
     }, 3000);
 };
+
+var close = function close(id) {
+    document.getElementById(id).innerHTML = "";
+};

@@ -10,6 +10,10 @@ const profilePage = (req, res) => {
   res.render('profile', { csrfToken: req.csrfToken() });
 };
 
+const notFound = (req, res) => {
+  res.render('missing', {csrfToken: req.csrfToken()});
+};
+
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');  // Bring us back to login screen.
@@ -90,3 +94,4 @@ module.exports.signup = signup;
 module.exports.logout = logout;
 module.exports.getToken = getToken;
 module.exports.getUser = getUser;
+module.exports.notFound = notFound;

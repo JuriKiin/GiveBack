@@ -28,4 +28,8 @@ const showToast = (message) => {
     toast.innerHTML = message;
     toast.className = "show";
     setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-  }
+}
+
+const close = (id) => {
+    document.getElementById(id).innerHTML = "";
+};
