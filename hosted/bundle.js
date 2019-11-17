@@ -51,6 +51,12 @@ var CreateForm = function CreateForm(props) {
         React.createElement('input', { id: 'address', type: 'text', name: 'address', placeholder: 'Event Address' }),
         React.createElement('input', { type: 'date', name: 'date' }),
         React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc' }),
+        React.createElement(
+            'label',
+            { 'for': 'isFeatured' },
+            'Feature this Event? (You will be charged $5)'
+        ),
+        React.createElement('input', { type: 'checkbox', id: 'isFeatured', name: 'isFeatured' }),
         React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
         React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' }),
         React.createElement(
@@ -82,9 +88,15 @@ var EventList = function EventList(props) {
         );
     }
 
-    var events = props.events.map(function (event) {
+    var sortedEvents = props.events.sort(function (a, b) {
+        return a === b ? 0 : a ? -1 : 1;
+    });
+
+    var events = sortedEvents.map(function (event) {
         var buttonText = "Register";
         var buttonClass = "buttonRegister";
+        var eventClass = "event";
+        if (event.isFeatured) eventClass = "eventFeatured";
         if (event.createdBy == props.username) {
             buttonText = "Created";
             buttonClass = "buttonCreated";
@@ -96,10 +108,11 @@ var EventList = function EventList(props) {
                 }
             });
         }
+
         var dateText = event.date.substring(0, event.date.indexOf('T'));
         return React.createElement(
             'div',
-            { key: event._id, className: 'event' },
+            { key: event._id, className: eventClass },
             React.createElement('img', { src: '/assets/img/eventIcon.png', alt: 'event', className: 'eventImage' }),
             React.createElement(
                 'h1',
@@ -186,7 +199,7 @@ var Upcoming = function Upcoming(props) {
 
 var loadEvents = function loadEvents(csrf, username) {
     sendAjax('GET', '/events', null, function (data) {
-        //console.log(data);
+        console.log(data);
         ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('events'));
 
         //Now get upcoming events

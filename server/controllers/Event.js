@@ -10,23 +10,33 @@ const getEvents = (req, res) => {
   if (req.query.limit) limitSize = req.query.limit;
   else limitSize = 10;
 
+  let returnDocs = [];
+
+  // Get a featured event first
+  Event.EventModel.findOne({ isFeatured: true }, (doc) => {
+    if(doc) returnDocs = returnDocs.concat([doc]);
+  });
+
   if (req.query.sortBy) {
     if (req.query.sortBy === 'date') {
       Event.EventModel.find({ attendees: req.session.account.username.toString() })
         .exec((e, docs) => {
           if (e) return res.json({ error: e });
-          return res.json({ events: docs });
+          returnDocs = returnDocs.concat(docs);
+          return res.json({ events: returnDocs });
         });
     }
   } else if (req.query.username) {
     Event.EventModel.find({ createdBy: req.query.username }, (err, docs) => {
       if (err) return res.json({ error: 'No Events Found' });
-      return res.json({ events: docs });
+      returnDocs = returnDocs.concat(docs);
+      return res.json({ events: returnDocs });
     });
   } else if (req.query.name) {
     Event.EventModel.find({ name: { $regex: req.query.name, $options: 'i' } }, (err, docs) => {
       if (err) return res.json({ error: 'No Events Found' });
-      return res.json({ events: docs });
+      returnDocs = returnDocs.concat(docs);
+      return res.json({ events: returnDocs });
     }).limit(limitSize);
   } else {
     // Otherwise, just load all events
@@ -34,7 +44,8 @@ const getEvents = (req, res) => {
     Event.EventModel.find().select('').limit(limitSize)
       .exec((err, docs) => {
         if (err) return res.json({ err });
-        return res.json({ events: docs });
+        returnDocs = returnDocs.concat(docs);
+        return res.json({ events: returnDocs });
       });
   }
 };
@@ -46,6 +57,7 @@ const createEventFromReq = (body) =>
      date: body.date,
      address: body.address,
      desc: body.desc,
+     isFeatured: body.isFeatured,
      attendees: [''],
      createdBy: '',
      _id: body._id,
@@ -53,7 +65,9 @@ const createEventFromReq = (body) =>
 
 // Create an event
 const create = (req, res) => {
-  if (!req.body.name || !req.body.date || !req.body.address || !req.body.desc) {
+  if (!req.body.name || !req.body.date ||
+      !req.body.address || !req.body.desc ||
+      !req.body.isFeatured) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 

@@ -23,6 +23,11 @@ const EventSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  isFeatured: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   createdBy: {
     type: String,
     trim: true,
@@ -44,6 +49,7 @@ EventSchema.statics.toAPI = doc => ({
   date: doc.date,
   address: doc.address,
   desc: doc.desc,
+  isFeatured: doc.isFeatured,
   createdBy: doc.createdBy,
   attendees: doc.attendees,
   _id: doc._id,

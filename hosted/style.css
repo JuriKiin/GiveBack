@@ -181,6 +181,7 @@ a{
 /* ------- EVENTS ------ */
 .noEvents {
     text-align: center;
+    font-family: var(--header-font);
 }
 .noEvents h1{
     font-family: var(--text-font);
@@ -216,7 +217,7 @@ a{
     margin: 50px 0 0 10%;
     width: 50%;
 }
-.event {
+.event, .eventFeatured {
     width:100%;
     display: grid;
     grid-template-columns: 20% 60% 20%;
@@ -226,8 +227,14 @@ a{
         "img desc desc";
     margin: 5% 0;
     box-shadow: var(--box-shadow);
-    background-color: #ffffff;
     font-family: var(--text-font);
+}
+.event {
+    background-color: #ffffff;
+}
+.eventFeatured {
+    background-color: rgb(247, 217, 83) !important;
+    border: 2px solid rgb(241, 201, 19);
 }
 
 .upcomingEvent {
@@ -251,13 +258,13 @@ a{
     font-family: var(--header-font);
 }
 
-.event img{
+.event img, .eventFeatured img{
     grid-area: img;
     width:80%;
     margin: 10%;
     height:auto;
 }
-.event h1 {
+.event h1, .eventFeatured h1 {
     grid-area: title;
 }
 .eventDate{
@@ -419,6 +426,10 @@ a{
     transition: all .25s ease-in-out;
     font-size: 15px;
 }
+.createForm label {
+    font-family: var(--text-font);
+}
+
 .createForm input[type='submit']:hover {
     transform: scale(0.95);
 }

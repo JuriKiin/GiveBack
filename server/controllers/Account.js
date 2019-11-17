@@ -113,50 +113,47 @@ const getToken = (request, response) => {
   res.json(csrfToken);
 };
 
-const deleteAccount = (req, res) => {
+const deleteAccount = (req, res) => res.json({ redirect: '/logout' })
 
-  return res.json({redirect: "/logout"});
-
-  Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
-    if (err) return res.status(400).json({ error: err });
-    const user = doc;
-    const events = user.events;
-    const createdEvents = user.createdEvents;
+  // Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+  //   if (err) return res.status(400).json({ error: err });
+  //   const user = doc;
+  //   const events = user.events;
+  //   const createdEvents = user.createdEvents;
 
 
+  //   events.forEach(e => {
+  //     const event = e;
+  //     if (event.attendees.includes(req.session.account.username)) {
+  //       const temp = event.attendees.filter(a => a !== req.session.account.username.toString());
+  //       event.attendees = temp;
+  //       event.save();
+  //     }
+  //   });
 
-    events.forEach(e => {
-      const event = e;
-      if (event.attendees.includes(req.session.account.username)) {
-        const temp = event.attendees.filter(a => a !== req.session.account.username.toString());
-        event.attendees = temp;
-        event.save();
-      }
-    });
-
-    return Account.AccountModel.find({ events: {
-      $in: createdEvents,
-    } }, (userError, userDocs) => {
-      if (userError) return res.status(400).json({ error: userError });
-      const users = userDocs;
-      users.forEach(u => {
-        const tempUser = u;
-        for (let i = 0; i < createdEvents.length; i++) {
-          if (u.events.includes(createdEvents[i].toString())) {
-            const temp = u.events.filter(a => a !== createdEvents[i].toString());
-            tempUser.events = temp;
-            tempUser.save();
-          }
-        }
-      });
-      return Account.AccountModel.remove({ username: user.username },
-          () => {
-            console.log("DELETING");
-            res.json({ redirect: '/logout' });
-          })
-    });
-  });
-};
+  //   return Account.AccountModel.find({ events: {
+  //     $in: createdEvents,
+  //   } }, (userError, userDocs) => {
+  //     if (userError) return res.status(400).json({ error: userError });
+  //     const users = userDocs;
+  //     users.forEach(u => {
+  //       const tempUser = u;
+  //       for (let i = 0; i < createdEvents.length; i++) {
+  //         if (u.events.includes(createdEvents[i].toString())) {
+  //           const temp = u.events.filter(a => a !== createdEvents[i].toString());
+  //           tempUser.events = temp;
+  //           tempUser.save();
+  //         }
+  //       }
+  //     });
+  //     return Account.AccountModel.remove({ username: user.username },
+  //         () => {
+  //           console.log('DELETING');
+  //           res.json({ redirect: '/logout' });
+  //         });
+  //   });
+  // });
+;
 
 module.exports.profilePage = profilePage;
 module.exports.loginPage = loginPage;
