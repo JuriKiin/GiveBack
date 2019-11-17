@@ -73,6 +73,7 @@ var SignUpWindow = function SignUpWindow(props) {
 };
 
 var createLoginWindow = function createLoginWindow(csrf) {
+    $('#modalBG').css('display', 'block');
     ReactDOM.render(React.createElement(LoginWindow, { csrf: csrf }), document.querySelector('#content'));
 };
 
@@ -143,4 +144,10 @@ var showToast = function showToast(message) {
 
 var close = function close(id) {
     document.getElementById(id).innerHTML = "";
+    $('#createButton').css('display', 'inline');
+    $('#modalBG').css('display', 'none');
+    $('html, body').css({
+        overflow: 'auto',
+        height: 'auto'
+    });
 };

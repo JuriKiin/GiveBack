@@ -63,6 +63,7 @@ const SignUpWindow = (props) => {
 };
 
 const createLoginWindow = (csrf) => {
+    $('#modalBG').css('display','block');
     ReactDOM.render(
         <LoginWindow csrf={csrf} />,
         document.querySelector('#content')

@@ -34,7 +34,9 @@ body {
 #login-button {
     background-color: #FFF400;
     border-radius: 40px;
+    transition: all .25s ease-in-out;
 }
+
 .nav-item{
     display:inline;
     text-align: center;
@@ -45,7 +47,7 @@ body {
     transition: all .2s ease-in-out;
     border-color: #FFF400;
 }
-.nav-item:hover {
+.header-grid .nav-item:hover {
     border-bottom: 5px solid #FFF400;
 }
 
@@ -204,6 +206,9 @@ a{
     text-align: center;
     color:white;
     font-family: var(--header-font);
+}
+.noUpcoming p{
+    color:black;
 }
 
 #events {
@@ -365,7 +370,7 @@ a{
   }
 
 /* Create Form */
-.createForm {
+.createForm, #confirm {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -375,6 +380,20 @@ a{
     box-shadow: var(--box-shadow);
     width: 60%;
     background-color: #ffffff;
+    z-index: 3;
+}
+#modalBG {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    padding: 25px;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height:100vh;
+    background-color: #ffffff8e;
+    z-index: 2;
 }
 
 .createForm h1 {
@@ -441,14 +460,14 @@ a{
 }
 
 /* Password Form */
-#password h1{
+.settingsSubHeader{
     padding-bottom: 20px;
     font-family: var(--text-font);
     margin:0;
     text-align: left;
     font-size: 12pt;
 }
-#password{
+.settingsContainer{
     margin: 0 10%;
     width: 100%;
 }
@@ -464,4 +483,20 @@ a{
 #password input[type='submit'] {
     width: 20%;
     margin-top: 20px;
+}
+
+/* DELETE ACCOUNT */
+.deleteAccountButton {
+    width: 20%;
+    border:none;
+    padding: 10px 25px;
+    background-color: #e05050;
+    border-radius: 40px;
+    color:white;
+    transition: all .25s ease-in-out;
+    cursor: pointer;
+    margin-bottom:25px;
+}
+.deleteAccountButton:hover {
+    transform: scale(1.05);
 }

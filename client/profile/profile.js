@@ -16,6 +16,7 @@ const setup = function(csrf) {
             <Greeting csrf={csrf} username={username}/>,
             document.getElementById('greeting')
         );
+        renderDelete(csrf);
         changePassword(csrf);
         loadEvents(csrf, username);
     });
@@ -23,7 +24,7 @@ const setup = function(csrf) {
 
 const Greeting = (props) => {
     return (
-        <h1>Hello, {props.username}</h1>
+        <h1>Hello, {props.username}!</h1>
     );
 };
 
@@ -89,7 +90,12 @@ const EventList = (props) => {
 
 
 const create = () => {
-    $('#searchButton').css('display','none');
+    $('#modalBG').css('display','block');
+    $('#createButton').css('display','none');
+    $('html, body').css({
+        overflow: 'auto',
+        height: 'auto'
+    });
     sendAjax('GET', '/getToken', null, (result) => {
         ReactDOM.render(
             <CreateForm csrf={result.csrfToken} />,
@@ -184,9 +190,8 @@ const PasswordForm = (props) => {
             onSubmit={handleChange}
             action='/password'
             method="POST"
-            className="passwordForm"
         >
-            <h1>Change Password:</h1>
+            <h1 className="settingsSubHeader">Change Password:</h1>
             <input type="password" name="current" placeholder="Current Password" id='current'/>
             <input type="password" name="newPassword" placeholder="New Password" id='new1'/>
             <input type="password" name="newPasswordAgain" placeholder="Retype New Password" id='new2'/>
@@ -195,3 +200,57 @@ const PasswordForm = (props) => {
         </form>
     );
 };
+
+const renderDelete = (csrf) => {
+    ReactDOM.render(
+        <DeleteAccount csrf={csrf}/>,
+        document.getElementById('deleteAccount')
+    );
+};
+
+const DeleteAccount = (props) => {
+    return (
+        <form id="account" name="accountForm"
+        onSubmit={showAccountDeleteConfirmPopup.bind(this,props.csrf)}
+        action='/deleteAccount'
+        method="POST"
+    >
+        <h1 className="settingsSubHeader">Delete Account:</h1>
+        <input type="submit" className="deleteAccountButton" value="Delete Account" />
+    </form>
+    )
+};
+
+const AccountPopup = (props) => {
+    return (
+       <form id="confirm" name="confirmPopup"
+        onSubmit={handleDeleteAccount}
+        action='/deleteAccount'
+        method="POST"
+        className=""
+        >
+            <h1 className="settingsSubHeader">Delete Account:</h1>
+            <p>Are you sure you want to delete your account?</p>
+            <p>All of your events will be deleted.</p>
+            <input type="hidden" name="_csrf" value={props.csrf} />
+            <input className="submit" type="submit" value="Yes, Delete it." />
+            <button onClick={close.bind(this, 'createModal')}>No, thanks.</button>
+        </form>
+    )
+};
+
+const showAccountDeleteConfirmPopup = (csrf, e) => {
+    e.preventDefault();
+    $('#modalBG').css('display', 'block');
+    ReactDOM.render(
+        <AccountPopup csrf={csrf} />,
+        document.getElementById('createModal')
+    );
+};
+
+const handleDeleteAccount = (e) => {
+    e.preventDefault();
+    sendAjax('POST', $('#confirm').attr("action"), $('#confirm').serialize(), redirect);
+};
+
+    //Show a popup

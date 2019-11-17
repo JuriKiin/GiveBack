@@ -1,11 +1,17 @@
 const Greeting = (props) => {
     return (
-        <h1>Hello, {props.username}</h1>
+        <h1>Hello, {props.username}!</h1>
     );
 };
 
 const create = () => {
-    $('#searchButton').css('display','none');
+    $('#modalBG').css('display','block');
+    $('#createButton').css('display','none');
+    $('html, body').css({
+        overflow: 'hidden',
+        height: '100%'
+    });
+
     sendAjax('GET', '/getToken', null, (result) => {
         ReactDOM.render(
             <CreateForm csrf={result.csrfToken} />,
@@ -83,7 +89,7 @@ const EventList = (props) => {
                 <p className='eventDate'>{dateText}</p>
                 <p className='eventDesc'>{event.desc}</p>
                 <input disabled={event.createdBy === props.username} className={buttonClass} type='button' onClick={register.bind(this,event).bind(this,props.csrf).bind(this,props.username)} value={buttonText} />
-                <p className='author'>{event.createdBy}</p>
+                <p className='author'>By: {event.createdBy}</p>
             </div>
         );
     });
@@ -97,7 +103,11 @@ const EventList = (props) => {
 const Upcoming = (props) => {
     if(props.events.length === 0) {
         return (
-            <div className="noUpcoming">No Upcoming Events</div>
+            <div className="noUpcoming">
+                <h1 className="upcomingHeader">Upcoming Events</h1>
+                <p>No Upcoming Events</p>
+            </div>
+
         );
     }
     const events = props.events.map((event) => {
@@ -129,7 +139,6 @@ const loadEvents = (csrf, username) => {
 
         //Now get upcoming events
         sendAjax('GET','/events?sortBy=date', null, (upcoming) => {
-            console.log(upcoming);
             ReactDOM.render(
                 <Upcoming events={upcoming.events} csrf={csrf} username={username} />,
                 document.getElementById('upcoming')
@@ -169,10 +178,6 @@ const setup = function(csrf) {
             document.getElementById('greeting')
         );
         loadEvents(csrf, username);
-    });
-
-    sendAjax('GET', '/events?sortBy=date', null, (data) => {
-        console.log(data);
     });
 };
 

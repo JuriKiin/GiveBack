@@ -5,12 +5,19 @@ var Greeting = function Greeting(props) {
         'h1',
         null,
         'Hello, ',
-        props.username
+        props.username,
+        '!'
     );
 };
 
 var create = function create() {
-    $('#searchButton').css('display', 'none');
+    $('#modalBG').css('display', 'block');
+    $('#createButton').css('display', 'none');
+    $('html, body').css({
+        overflow: 'hidden',
+        height: '100%'
+    });
+
     sendAjax('GET', '/getToken', null, function (result) {
         ReactDOM.render(React.createElement(CreateForm, { csrf: result.csrfToken }), document.getElementById('createModal'));
     });
@@ -113,6 +120,7 @@ var EventList = function EventList(props) {
             React.createElement(
                 'p',
                 { className: 'author' },
+                'By: ',
                 event.createdBy
             )
         );
@@ -129,7 +137,16 @@ var Upcoming = function Upcoming(props) {
         return React.createElement(
             'div',
             { className: 'noUpcoming' },
-            'No Upcoming Events'
+            React.createElement(
+                'h1',
+                { className: 'upcomingHeader' },
+                'Upcoming Events'
+            ),
+            React.createElement(
+                'p',
+                null,
+                'No Upcoming Events'
+            )
         );
     }
     var events = props.events.map(function (event) {
@@ -174,7 +191,6 @@ var loadEvents = function loadEvents(csrf, username) {
 
         //Now get upcoming events
         sendAjax('GET', '/events?sortBy=date', null, function (upcoming) {
-            console.log(upcoming);
             ReactDOM.render(React.createElement(Upcoming, { events: upcoming.events, csrf: csrf, username: username }), document.getElementById('upcoming'));
         });
     });
@@ -206,10 +222,6 @@ var setup = function setup(csrf) {
         username = data.username;
         ReactDOM.render(React.createElement(Greeting, { csrf: csrf, username: username }), document.getElementById('greeting'));
         loadEvents(csrf, username);
-    });
-
-    sendAjax('GET', '/events?sortBy=date', null, function (data) {
-        console.log(data);
     });
 };
 
@@ -260,4 +272,10 @@ var showToast = function showToast(message) {
 
 var close = function close(id) {
     document.getElementById(id).innerHTML = "";
+    $('#createButton').css('display', 'inline');
+    $('#modalBG').css('display', 'none');
+    $('html, body').css({
+        overflow: 'auto',
+        height: 'auto'
+    });
 };

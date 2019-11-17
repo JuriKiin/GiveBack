@@ -32,4 +32,11 @@ const showToast = (message) => {
 
 const close = (id) => {
     document.getElementById(id).innerHTML = "";
+    $('#createButton').css('display', 'inline');
+    $('#modalBG').css('display','none');
+    $('html, body').css({
+        overflow: 'auto',
+        height: 'auto'
+    });
+
 };

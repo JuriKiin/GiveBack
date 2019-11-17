@@ -15,6 +15,7 @@ var setup = function setup(csrf) {
     sendAjax('GET', '/user', null, function (data) {
         username = data.username;
         ReactDOM.render(React.createElement(Greeting, { csrf: csrf, username: username }), document.getElementById('greeting'));
+        renderDelete(csrf);
         changePassword(csrf);
         loadEvents(csrf, username);
     });
@@ -25,7 +26,8 @@ var Greeting = function Greeting(props) {
         'h1',
         null,
         'Hello, ',
-        props.username
+        props.username,
+        '!'
     );
 };
 
@@ -107,7 +109,12 @@ var EventList = function EventList(props) {
 };
 
 var create = function create() {
-    $('#searchButton').css('display', 'none');
+    $('#modalBG').css('display', 'block');
+    $('#createButton').css('display', 'none');
+    $('html, body').css({
+        overflow: 'auto',
+        height: 'auto'
+    });
     sendAjax('GET', '/getToken', null, function (result) {
         ReactDOM.render(React.createElement(CreateForm, { csrf: result.csrfToken }), document.getElementById('createModal'));
     });
@@ -205,12 +212,11 @@ var PasswordForm = function PasswordForm(props) {
         { id: 'password', name: 'passwordForm',
             onSubmit: handleChange,
             action: '/password',
-            method: 'POST',
-            className: 'passwordForm'
+            method: 'POST'
         },
         React.createElement(
             'h1',
-            null,
+            { className: 'settingsSubHeader' },
             'Change Password:'
         ),
         React.createElement('input', { type: 'password', name: 'current', placeholder: 'Current Password', id: 'current' }),
@@ -220,6 +226,74 @@ var PasswordForm = function PasswordForm(props) {
         React.createElement('input', { className: 'buttonRegister', type: 'submit', value: 'Change' })
     );
 };
+
+var renderDelete = function renderDelete(csrf) {
+    ReactDOM.render(React.createElement(DeleteAccount, { csrf: csrf }), document.getElementById('deleteAccount'));
+};
+
+var DeleteAccount = function DeleteAccount(props) {
+    return React.createElement(
+        'form',
+        { id: 'account', name: 'accountForm',
+            onSubmit: showAccountDeleteConfirmPopup.bind(undefined, props.csrf),
+            action: '/deleteAccount',
+            method: 'POST'
+        },
+        React.createElement(
+            'h1',
+            { className: 'settingsSubHeader' },
+            'Delete Account:'
+        ),
+        React.createElement('input', { type: 'submit', className: 'deleteAccountButton', value: 'Delete Account' })
+    );
+};
+
+var AccountPopup = function AccountPopup(props) {
+    return React.createElement(
+        'form',
+        { id: 'confirm', name: 'confirmPopup',
+            onSubmit: handleDeleteAccount,
+            action: '/deleteAccount',
+            method: 'POST',
+            className: ''
+        },
+        React.createElement(
+            'h1',
+            { className: 'settingsSubHeader' },
+            'Delete Account:'
+        ),
+        React.createElement(
+            'p',
+            null,
+            'Are you sure you want to delete your account?'
+        ),
+        React.createElement(
+            'p',
+            null,
+            'All of your events will be deleted.'
+        ),
+        React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+        React.createElement('input', { className: 'submit', type: 'submit', value: 'Yes, Delete it.' }),
+        React.createElement(
+            'button',
+            { onClick: close.bind(undefined, 'createModal') },
+            'No, thanks.'
+        )
+    );
+};
+
+var showAccountDeleteConfirmPopup = function showAccountDeleteConfirmPopup(csrf, e) {
+    e.preventDefault();
+    $('#modalBG').css('display', 'block');
+    ReactDOM.render(React.createElement(AccountPopup, { csrf: csrf }), document.getElementById('createModal'));
+};
+
+var handleDeleteAccount = function handleDeleteAccount(e) {
+    e.preventDefault();
+    sendAjax('POST', $('#confirm').attr("action"), $('#confirm').serialize(), redirect);
+};
+
+//Show a popup
 "use strict";
 
 var handleError = function handleError(message) {
@@ -258,4 +332,10 @@ var showToast = function showToast(message) {
 
 var close = function close(id) {
     document.getElementById(id).innerHTML = "";
+    $('#createButton').css('display', 'inline');
+    $('#modalBG').css('display', 'none');
+    $('html, body').css({
+        overflow: 'auto',
+        height: 'auto'
+    });
 };
