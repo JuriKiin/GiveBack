@@ -66,8 +66,7 @@ const createEventFromReq = (body) =>
 // Create an event
 const create = (req, res) => {
   if (!req.body.name || !req.body.date ||
-      !req.body.address || !req.body.desc ||
-      !req.body.isFeatured) {
+      !req.body.address || !req.body.desc) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
