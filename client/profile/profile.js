@@ -70,11 +70,12 @@ const EventList = (props) => {
     }
     const events = props.events.map((event) => {
         let dateText = event.date.substring(0,event.date.indexOf('T'));
+        let dateTimeText = `${dateText} | ${event.time}`;
         return (
             <div key={event.id} className='event'>
                 <img src='/assets/img/eventIcon.png' alt='event' className='eventImage' />
                 <h1>{event.name}</h1>
-                <p className='eventDate'>{dateText}</p>
+                <p className='eventDate'>{dateTimeText}</p>
                 <p className='eventDesc'>{event.desc}</p>
                 <input className="author" type="button" onClick={edit.bind(this,event).bind(this,props.csrf)} value="Edit" />
                 <input className="deleteButton" type='button' onClick={deleteEvent.bind(this,event).bind(this,props.csrf).bind(this, props.username)} value="Delete" />
@@ -138,6 +139,7 @@ const CreateForm = (props) => {
                 <input id="name" type="text" name="name" placeholder="Event Name" defaultValue={props.event.name}/>
                 <input id="address" type="text" name="address" placeholder="Event Address" defaultValue={props.event.address}/>
                 <input type='date' name="date" defaultValue={dateText}/>
+                <input type='time' name="time" defaultValue={props.event.time} />
                 <textarea placeholder="Event Description" id='desc' name="desc" defaultValue={props.event.desc}>
 
                 </textarea>

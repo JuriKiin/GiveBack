@@ -13,6 +13,10 @@ const EventSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  time: {
+    type: String,
+    required: true,
+  },
   address: {
     type: String,
     required: true,
@@ -46,6 +50,7 @@ EventSchema.statics.toAPI = doc => ({
   // _id is built into your mongo document and is guaranteed to be unique
   name: doc.name,
   date: doc.date,
+  time: doc.time,
   address: doc.address,
   desc: doc.desc,
   isFeatured: doc.isFeatured,

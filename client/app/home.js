@@ -41,7 +41,8 @@ const CreateForm = (props) => {
             <h1>Create an event.</h1>
             <input id="name" type="text" name="name" placeholder="Event Name" />
             <input id="address" type="text" name="address" placeholder="Event Address" />
-            <input type='date' name="date"/>
+            <input type='date' name="date" />
+            <input type='time' name="time" />
             <textarea placeholder="Event Description" id='desc' name="desc">
 
             </textarea>
@@ -91,11 +92,12 @@ const EventList = (props) => {
         }
 
         let dateText = event.date.substring(0,event.date.indexOf('T'));
+        let dateTimeText = `${dateText} | ${event.time}`;
         return (
             <div key={event._id} className={eventClass}>
                 <img src='/assets/img/eventIcon.png' alt='event' className='eventImage' />
                 <h1>{event.name}</h1>
-                <p className='eventDate'>{dateText}</p>
+                <p className='eventDate'>{dateTimeText}</p>
                 <p className='eventDesc'>{event.desc}</p>
                 <input disabled={event.createdBy === props.username} className={buttonClass} type='button' onClick={register.bind(this,event).bind(this,props.csrf).bind(this,props.username)} value={buttonText} />
                 <p className='author'>By: {event.createdBy}</p>
@@ -140,7 +142,6 @@ const Upcoming = (props) => {
 
 const loadEvents = (csrf, username) => {
     sendAjax('GET', '/events', null, (data) => {
-        console.log(data);
         ReactDOM.render(
             <EventList events={data.events} csrf={csrf} username={username}/>,
             document.getElementById('events')
@@ -180,7 +181,6 @@ const search = (e) => {
 const setup = function(csrf) {
     let username = '';
     sendAjax('GET', '/user', null, (data) => {
-        //console.log(data);
         username = data.username;
         ReactDOM.render(
             <Greeting csrf={csrf} username={username}/>,

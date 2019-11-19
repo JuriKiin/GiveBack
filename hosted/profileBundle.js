@@ -78,6 +78,7 @@ var EventList = function EventList(props) {
     }
     var events = props.events.map(function (event) {
         var dateText = event.date.substring(0, event.date.indexOf('T'));
+        var dateTimeText = dateText + ' | ' + event.time;
         return React.createElement(
             'div',
             { key: event.id, className: 'event' },
@@ -90,7 +91,7 @@ var EventList = function EventList(props) {
             React.createElement(
                 'p',
                 { className: 'eventDate' },
-                dateText
+                dateTimeText
             ),
             React.createElement(
                 'p',
@@ -159,6 +160,7 @@ var CreateForm = function CreateForm(props) {
             React.createElement('input', { id: 'name', type: 'text', name: 'name', placeholder: 'Event Name', defaultValue: props.event.name }),
             React.createElement('input', { id: 'address', type: 'text', name: 'address', placeholder: 'Event Address', defaultValue: props.event.address }),
             React.createElement('input', { type: 'date', name: 'date', defaultValue: dateText }),
+            React.createElement('input', { type: 'time', name: 'time', defaultValue: props.event.time }),
             React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc', defaultValue: props.event.desc }),
             React.createElement('input', { type: 'hidden', name: '_csrf', defaultValue: props.csrf }),
             React.createElement('input', { type: 'hidden', name: '_id', defaultValue: props.event._id }),
@@ -301,7 +303,6 @@ var handleError = function handleError(message) {
 };
 
 var redirect = function redirect(response) {
-    console.log(response);
     window.location = response.redirect;
 };
 
@@ -321,7 +322,6 @@ var sendAjax = function sendAjax(type, action, data, success) {
 };
 
 var showToast = function showToast(message) {
-    console.log(message);
     var toast = document.getElementById("snackbar");
     toast.innerHTML = message;
     toast.className = "show";

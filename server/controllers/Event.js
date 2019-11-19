@@ -14,7 +14,7 @@ const getEvents = (req, res) => {
 
   // Get a featured event first
   Event.EventModel.findOne({ isFeatured: true }, (doc) => {
-    if(doc) returnDocs = returnDocs.concat([doc]);
+    if (doc) returnDocs = returnDocs.concat([doc]);
   });
 
   if (req.query.sortBy) {
@@ -55,6 +55,7 @@ const createEventFromReq = (body) =>
    ({
      name: body.name,
      date: body.date,
+     time: body.time,
      address: body.address,
      desc: body.desc,
      isFeatured: body.isFeatured,
@@ -66,7 +67,7 @@ const createEventFromReq = (body) =>
 // Create an event
 const create = (req, res) => {
   if (!req.body.name || !req.body.date ||
-      !req.body.address || !req.body.desc) {
+      !req.body.address || !req.body.time || !req.body.desc) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 

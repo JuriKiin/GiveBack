@@ -113,7 +113,6 @@ var handleError = function handleError(message) {
 };
 
 var redirect = function redirect(response) {
-    console.log(response);
     window.location = response.redirect;
 };
 
@@ -133,7 +132,6 @@ var sendAjax = function sendAjax(type, action, data, success) {
 };
 
 var showToast = function showToast(message) {
-    console.log(message);
     var toast = document.getElementById("snackbar");
     toast.innerHTML = message;
     toast.className = "show";

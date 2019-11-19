@@ -158,7 +158,6 @@ var Upcoming = function Upcoming(props) {
 
 var loadEvents = function loadEvents(csrf, username) {
     sendAjax('GET', '/events', null, function (data) {
-        //console.log(data);
         ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('events'));
 
         //Now get upcoming events
@@ -191,7 +190,6 @@ var search = function search(e) {
 var setup = function setup(csrf) {
     var username = '';
     sendAjax('GET', '/user', null, function (data) {
-        //console.log(data);
         username = data.username;
         ReactDOM.render(React.createElement(Greeting, { csrf: csrf, username: username }), document.getElementById('greeting'));
         loadEvents(csrf, username);

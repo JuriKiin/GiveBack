@@ -50,6 +50,7 @@ var CreateForm = function CreateForm(props) {
         React.createElement('input', { id: 'name', type: 'text', name: 'name', placeholder: 'Event Name' }),
         React.createElement('input', { id: 'address', type: 'text', name: 'address', placeholder: 'Event Address' }),
         React.createElement('input', { type: 'date', name: 'date' }),
+        React.createElement('input', { type: 'time', name: 'time' }),
         React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc' }),
         React.createElement(
             'label',
@@ -110,6 +111,7 @@ var EventList = function EventList(props) {
         }
 
         var dateText = event.date.substring(0, event.date.indexOf('T'));
+        var dateTimeText = dateText + ' | ' + event.time;
         return React.createElement(
             'div',
             { key: event._id, className: eventClass },
@@ -122,7 +124,7 @@ var EventList = function EventList(props) {
             React.createElement(
                 'p',
                 { className: 'eventDate' },
-                dateText
+                dateTimeText
             ),
             React.createElement(
                 'p',
@@ -199,7 +201,6 @@ var Upcoming = function Upcoming(props) {
 
 var loadEvents = function loadEvents(csrf, username) {
     sendAjax('GET', '/events', null, function (data) {
-        console.log(data);
         ReactDOM.render(React.createElement(EventList, { events: data.events, csrf: csrf, username: username }), document.getElementById('events'));
 
         //Now get upcoming events
@@ -231,7 +232,6 @@ var search = function search(e) {
 var setup = function setup(csrf) {
     var username = '';
     sendAjax('GET', '/user', null, function (data) {
-        //console.log(data);
         username = data.username;
         ReactDOM.render(React.createElement(Greeting, { csrf: csrf, username: username }), document.getElementById('greeting'));
         loadEvents(csrf, username);
@@ -254,7 +254,6 @@ var handleError = function handleError(message) {
 };
 
 var redirect = function redirect(response) {
-    console.log(response);
     window.location = response.redirect;
 };
 
@@ -274,7 +273,6 @@ var sendAjax = function sendAjax(type, action, data, success) {
 };
 
 var showToast = function showToast(message) {
-    console.log(message);
     var toast = document.getElementById("snackbar");
     toast.innerHTML = message;
     toast.className = "show";

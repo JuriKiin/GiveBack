@@ -511,3 +511,18 @@ a{
 .deleteAccountButton:hover {
     transform: scale(1.05);
 }
+
+/* ---------- Notification Bell ---------- */
+.notificationBell {
+    width:40px;
+    height:40px;
+}
+#bellDot { 
+    height: 10px;
+    width: 10px;
+    margin-left:-10px;
+    background-color: #FFF400;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+}
