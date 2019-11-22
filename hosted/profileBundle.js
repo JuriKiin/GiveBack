@@ -98,6 +98,18 @@ var EventList = function EventList(props) {
                 { className: 'eventDesc' },
                 event.desc
             ),
+            React.createElement(
+                'p',
+                { className: 'eventComments' },
+                event.comments.length,
+                ' comments'
+            ),
+            React.createElement(
+                'p',
+                { className: 'eventGoing' },
+                event.attendees.length,
+                ' people going'
+            ),
             React.createElement('input', { className: 'author', type: 'button', onClick: edit.bind(undefined, event).bind(undefined, props.csrf), value: 'Edit' }),
             React.createElement('input', { className: 'deleteButton', type: 'button', onClick: deleteEvent.bind(undefined, event).bind(undefined, props.csrf).bind(undefined, props.username), value: 'Delete' })
         );
@@ -188,6 +200,7 @@ var CreateForm = function CreateForm(props) {
             React.createElement('input', { id: 'name', type: 'text', name: 'name', placeholder: 'Event Name' }),
             React.createElement('input', { id: 'address', type: 'text', name: 'address', placeholder: 'Event Address' }),
             React.createElement('input', { type: 'date', name: 'date' }),
+            React.createElement('input', { type: 'time', name: 'time' }),
             React.createElement('textarea', { placeholder: 'Event Description', id: 'desc', name: 'desc' }),
             React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
             React.createElement('input', { className: 'submit', type: 'submit', value: 'Create' }),

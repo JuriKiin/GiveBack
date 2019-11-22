@@ -4,6 +4,24 @@ const Account = models.Account;
 
 const home = (req, res) => res.render('app', { csrfToken: req.csrfToken() });
 
+const eventPage = (req, res) => {
+  if (!req.query.id) return res.status(400).json({ error: 'Invalid event.' });
+  return Event.EventModel.findById(req.query.id, (err, doc) => {
+    if (err) return res.status(400).json({ error: err });
+    return res.render('event', {
+      event: doc._id,
+    });
+  });
+};
+
+const getEventById = (req, res) => {
+  if (!req.query.id) return res.status(400).json({ error: 'Invalid event.' });
+  return Event.EventModel.findById(req.query.id, (err, doc) => {
+    if (err) return res.status(400).json({ error: err });
+    return res.json(doc);
+  });
+};
+
 const getEvents = (req, res) => {
   // If we pass in a username to the query, load events by user
   let limitSize = 0;
@@ -59,7 +77,8 @@ const createEventFromReq = (body) =>
      address: body.address,
      desc: body.desc,
      isFeatured: body.isFeatured,
-     attendees: [''],
+     attendees: [],
+     comments: [],
      createdBy: '',
      _id: body._id,
    });
@@ -237,4 +256,6 @@ module.exports.create = create;
 module.exports.register = register;
 module.exports.delete = deleteEvent;
 module.exports.edit = edit;
+module.exports.eventPage = eventPage;
+module.exports.event = getEventById;
 

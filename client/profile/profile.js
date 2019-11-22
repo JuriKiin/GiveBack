@@ -77,6 +77,8 @@ const EventList = (props) => {
                 <h1>{event.name}</h1>
                 <p className='eventDate'>{dateTimeText}</p>
                 <p className='eventDesc'>{event.desc}</p>
+                <p className='eventComments'>{event.comments.length} comments</p>
+                <p className='eventGoing'>{event.attendees.length} people going</p>
                 <input className="author" type="button" onClick={edit.bind(this,event).bind(this,props.csrf)} value="Edit" />
                 <input className="deleteButton" type='button' onClick={deleteEvent.bind(this,event).bind(this,props.csrf).bind(this, props.username)} value="Delete" />
             </div>
@@ -161,6 +163,7 @@ const CreateForm = (props) => {
                 <input id="name" type="text" name="name" placeholder="Event Name"/>
                 <input id="address" type="text" name="address" placeholder="Event Address"/>
                 <input type='date' name="date"/>
+                <input type='time' name="time"/>
                 <textarea placeholder="Event Description" id='desc' name="desc">
     
                 </textarea>

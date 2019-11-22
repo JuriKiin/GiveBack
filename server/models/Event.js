@@ -38,7 +38,13 @@ const EventSchema = new mongoose.Schema({
   },
   attendees: {
     type: [String],
-    required: true,
+  },
+  comments: {
+    type: [{
+      username: String,
+      time: String,
+      comment: String,
+    }],
   },
   createdDate: {
     type: Date,
@@ -56,6 +62,7 @@ EventSchema.statics.toAPI = doc => ({
   isFeatured: doc.isFeatured,
   createdBy: doc.createdBy,
   attendees: doc.attendees,
+  comments: doc.comments,
   _id: doc._id,
 });
 

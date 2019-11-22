@@ -223,8 +223,8 @@ a{
     grid-template-columns: 20% 60% 20%;
     grid-template-areas: 
         "img title register"
-        "img date author"
-        "img desc desc";
+        "going date author"
+        "comments desc desc";
     margin: 5% 0;
     box-shadow: var(--box-shadow);
     font-family: var(--text-font);
@@ -260,13 +260,18 @@ a{
 
 .event img, .eventFeatured img{
     grid-area: img;
-    width:80%;
+    width:50%;
     margin: 10%;
     height:auto;
 }
 .event h1, .eventFeatured h1 {
     grid-area: title;
+    cursor: pointer;
 }
+.event h1:hover, .eventFeatured h1:hover {
+    text-decoration: underline;
+}
+
 .eventDate{
     grid-area: date;
 }
@@ -279,6 +284,16 @@ a{
 .author{
     grid-area: author;
     justify-self: center;
+}
+.eventComments{
+    grid-area: comments;
+    margin-left:15%;
+    font-size: 10pt;
+}
+.eventGoing{
+    grid-area: going;
+    margin-left:15%;
+    font-size: 10pt;
 }
 
 .genericButton {

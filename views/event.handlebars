@@ -1,0 +1,30 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Give Back | Profile</title>
+  <script crossorigin src="https://unpkg.com/react@15/dist/react.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+  <script crossorigin src="https://unpkg.com/prop-types/prop-types.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
+  <link rel="shortcut icon" href="/assets/img/favicon.png"/>
+  <link rel="stylesheet" href="https://jurikiin.com/KiinStyles/css/kiinStyle.css">
+  <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
+</head>
+<body>
+  <header class='header-grid'>
+    <span id='greeting' class='font-header font-sm margin-left-5 bold'></span>
+    <a class='' href='/login'><img src='/assets/img/logo.png' alt='logo' width="50" height="50" /></a>
+    <ul class='list-clear'>
+      <li class='d-inline pad-left-10 pad-right-10 nav-item'><a href='/home'>Home</a></li>
+      <li class='d-inline nav-item'><a href='/logout'>Logout</a></li>
+    </ul>
+  </header>
+  <div class='header-spacer'></div>
+  <div id='event'></div>
+  <div id="snackbar"></div>
+  <input type='hidden' value={{event}} id='id'/>
+  <script src="/assets/eventBundle.js"></script>
+</body>
+</html>

@@ -83,22 +83,22 @@ const EventList = (props) => {
             buttonText = "Created";
             buttonClass = "buttonCreated";
         } else {
-            event.attendees.forEach((a) => {
-                if(a === props.username)  {
-                    buttonText = "Going";
-                    buttonClass = "buttonGoing";
-                }
-            });
+            if(event.attendees.includes(props.username)) {
+                buttonText = "Going";
+                buttonClass = "buttonGoing";
+            }
         }
-
         let dateText = event.date.substring(0,event.date.indexOf('T'));
         let dateTimeText = `${dateText} | ${event.time}`;
+
         return (
             <div key={event._id} className={eventClass}>
                 <img src='/assets/img/eventIcon.png' alt='event' className='eventImage' />
-                <h1>{event.name}</h1>
+                <h1 onClick={loadEvent.bind(this,event._id)}>{event.name}</h1>
                 <p className='eventDate'>{dateTimeText}</p>
                 <p className='eventDesc'>{event.desc}</p>
+                <p className='eventComments'>{event.comments.length} comments</p>
+                <p className='eventGoing'>{event.attendees.length} people going</p>
                 <input disabled={event.createdBy === props.username} className={buttonClass} type='button' onClick={register.bind(this,event).bind(this,props.csrf).bind(this,props.username)} value={buttonText} />
                 <p className='author'>By: {event.createdBy}</p>
             </div>
@@ -109,6 +109,10 @@ const EventList = (props) => {
             {events}
         </div>
     );
+};
+
+const loadEvent = (id) => {
+    location.href = '/viewEvent?id='+id;
 };
 
 const Upcoming = (props) => {

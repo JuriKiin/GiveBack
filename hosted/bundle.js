@@ -102,23 +102,21 @@ var EventList = function EventList(props) {
             buttonText = "Created";
             buttonClass = "buttonCreated";
         } else {
-            event.attendees.forEach(function (a) {
-                if (a === props.username) {
-                    buttonText = "Going";
-                    buttonClass = "buttonGoing";
-                }
-            });
+            if (event.attendees.includes(props.username)) {
+                buttonText = "Going";
+                buttonClass = "buttonGoing";
+            }
         }
-
         var dateText = event.date.substring(0, event.date.indexOf('T'));
         var dateTimeText = dateText + ' | ' + event.time;
+
         return React.createElement(
             'div',
             { key: event._id, className: eventClass },
             React.createElement('img', { src: '/assets/img/eventIcon.png', alt: 'event', className: 'eventImage' }),
             React.createElement(
                 'h1',
-                null,
+                { onClick: loadEvent.bind(undefined, event._id) },
                 event.name
             ),
             React.createElement(
@@ -130,6 +128,18 @@ var EventList = function EventList(props) {
                 'p',
                 { className: 'eventDesc' },
                 event.desc
+            ),
+            React.createElement(
+                'p',
+                { className: 'eventComments' },
+                event.comments.length,
+                ' comments'
+            ),
+            React.createElement(
+                'p',
+                { className: 'eventGoing' },
+                event.attendees.length,
+                ' people going'
             ),
             React.createElement('input', { disabled: event.createdBy === props.username, className: buttonClass, type: 'button', onClick: register.bind(undefined, event).bind(undefined, props.csrf).bind(undefined, props.username), value: buttonText }),
             React.createElement(
@@ -145,6 +155,10 @@ var EventList = function EventList(props) {
         { className: 'eventList' },
         events
     );
+};
+
+var loadEvent = function loadEvent(id) {
+    location.href = '/viewEvent?id=' + id;
 };
 
 var Upcoming = function Upcoming(props) {
