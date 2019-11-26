@@ -4,6 +4,7 @@ const Greeting = (props) => {
     );
 };
 
+//Lets the user register or unregister for this event.
 const register = (event, csrf) => {
     event._csrf = csrf;
     sendAjax('POST', '/register', event, (data) => {
@@ -12,6 +13,7 @@ const register = (event, csrf) => {
     });
 };
 
+//This is the event page 
 const Event = (props) => {
     let event = props.event;
     let buttonText = "Register";
@@ -39,6 +41,7 @@ const Event = (props) => {
     );
 };
 
+//This is the react component for the comments section
 const Comments = (props) => {
     const comments = props.event.comments.map((comment) => {
 
@@ -63,23 +66,28 @@ const Comments = (props) => {
 
     return (
         <div className="comments">
+            <h1>Comments</h1>
             {comments}
         </div>
     )
 };
 
+//Make the call to comment on a post
 const comment = (e) => {
     e.preventDefault();
+    //Make sure we actually typed something.
     if($('#commentField').val() == '') {
         showToast("Comment field is empty.");
         return false;
     }
+    //Make the API call.
     sendAjax($('#commentForm').attr("method"),$('#commentForm').attr("action"), $('#commentForm').serialize(), (data) => {
         $('#commentField').val('');
         getToken();
     });
 };
 
+//This component is the text-area and post button for comments
 const AddComment = (props) => {
     return (
         <form id="commentForm" name="commentForm"
@@ -96,6 +104,30 @@ const AddComment = (props) => {
     );
 };
 
+const Attendees = (props) => {
+    props.event.attendees.unshift(props.event.createdBy);
+    const people = props.event.attendees.map((user) => {
+
+        let title = '';
+        let userClass = 'attendee';
+        if(user === props.event.createdBy) {
+            userClass = 'attendee_org';
+            title = '- [Organizer]';
+        }
+
+        return (
+            <div className={userClass}>{user} {title}</div>
+        );
+    });
+
+    return (
+        <div>
+            <h1>Who's Going</h1>
+            {people}
+        </div>
+    );
+};
+
 const setup = function(setupData) {
     sendAjax('GET', '/user', null, (user) => {
         sendAjax('GET', '/event?id='+$('#id').val(), null, (result) => {
@@ -105,7 +137,6 @@ const setup = function(setupData) {
             );
             ReactDOM.render(
                 <Event csrf={setupData.csrfToken} username={user.username} event={result}>
-                    <Comments csrf={setup.csrfToken} event={result} />
                 </Event>,
                 document.getElementById('event')
             );
@@ -116,6 +147,10 @@ const setup = function(setupData) {
             ReactDOM.render(
                 <AddComment csrf={setupData.csrfToken} event={result} />,
                 document.getElementById('addcomment')
+            );
+            ReactDOM.render(
+                <Attendees event={result} username={user.username}/>,
+                document.getElementById('attendees')
             );
         });
     });

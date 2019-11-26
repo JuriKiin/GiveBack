@@ -234,8 +234,9 @@ a{
     width:80%;
     display: grid;
     grid-template-columns: 30% 70%;
+    grid-template-rows: 50px;
     grid-template-areas: 
-        "title ."
+        "title title"
         "register ."
         "date ."
         "address ."
@@ -248,11 +249,11 @@ a{
     font-size: 15pt;
 }
 .eventPage h1 {
+    padding-left:20px;
+    text-align: left;
+    grid-area: title;
+    font-family: var(--header-font);
     font-size: 25pt;
-}
-.eventPage img {
-    width:20px;
-    height: 20px;
 }
 .eventPage .eventDesc {
     text-align: left;
@@ -578,6 +579,9 @@ a{
 .comments{
     margin: 0 10%;
 }
+.comments h1{
+    font-family: var(--header-font);
+}
 
 .comment {
     width:100%;
@@ -596,7 +600,7 @@ a{
     padding-left: 25px;
 }
 .comment_user_organizer{
-    color: rgb(33, 107, 219);
+    color: #216bdb;
 }
 .comment_user_attendee{
     color: #39a12b;
@@ -632,4 +636,24 @@ a{
 }
 #commentForm input[type="submit"]:hover{
     border-radius: 15px;
+}
+
+/* ---------- Attendees ---------- */
+#attendees{
+    width: 80%;
+    margin: 0 10%;
+    max-height: 300px;
+}
+#attendees div h1 {
+    font-family: var(--header-font);
+    margin-top: 0;
+}
+.attendee, .attendee_org{
+    border-radius: 10px;
+    background-color: #d8d4d4;
+    margin: 5px;
+    padding: 10px 15px;
+}
+.attendee_org{
+    color: #216bdb;
 }
