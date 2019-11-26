@@ -4,11 +4,11 @@ const Greeting = (props) => {
     );
 };
 
-const register = (event, csrf, username) => {
+const register = (event, csrf) => {
     event._csrf = csrf;
     sendAjax('POST', '/register', event, (data) => {
         showToast(data.message);
-        loadEvents(csrf, username);
+        setup({csrfToken: csrf});
     });
 };
 
@@ -29,16 +29,70 @@ const Event = (props) => {
         }
     }
     return (
-        <div key={event._id} className={eventClass}>
-                <img src='/assets/img/eventIcon.png' alt='event' className='eventImage' />
+        <div key={event._id} className="eventPage">
                 <h1>{event.name}</h1>
-                <p className='eventDate'>{dateTimeText}</p>
-                <p className='eventDesc'>{event.desc}</p>
-                <p className='eventComments'>{event.comments.length} comments</p>
-                <p className='eventGoing'>{event.attendees.length} people going</p>
+                <p className='eventDate'>When: {dateTimeText}</p>
+                <p className='eventAddress'>Where: {event.address}</p>
+                <p className='eventDesc'>What: {event.desc}</p>
                 <input disabled={event.createdBy === props.username} className={buttonClass} type='button' onClick={register.bind(this,event).bind(this,props.csrf).bind(this,props.username)} value={buttonText} />
-                <p className='author'>By: {event.createdBy}</p>
         </div>
+    );
+};
+
+const Comments = (props) => {
+    const comments = props.event.comments.map((comment) => {
+
+        let title = '';
+        let userClass = 'comment_user';
+        if(comment.username === props.event.createdBy) {
+            title = '[Organizer]';
+            userClass = 'comment_user_organizer';
+        }
+        else if(props.event.attendees.includes(comment.username)) {
+            title = '[Going]';
+            userClass = 'comment_user_attendee';
+        }
+
+        return (
+            <div className='comment'>
+                <p className={userClass}>{comment.username} {title} - {comment.time}</p>
+                <p className='comment_message'>{comment.comment}</p>
+            </div>
+        );
+    });
+
+    return (
+        <div className="comments">
+            {comments}
+        </div>
+    )
+};
+
+const comment = (e) => {
+    e.preventDefault();
+    if($('#commentField').val() == '') {
+        showToast("Comment field is empty.");
+        return false;
+    }
+    sendAjax($('#commentForm').attr("method"),$('#commentForm').attr("action"), $('#commentForm').serialize(), (data) => {
+        $('#commentField').val('');
+        getToken();
+    });
+};
+
+const AddComment = (props) => {
+    return (
+        <form id="commentForm" name="commentForm"
+        onSubmit={comment}
+        action="/comment"
+        method="POST"
+        className="commentForm"
+        >
+            <textarea name='comment' placeholder="Type your comment here" id='commentField'></textarea>
+            <input type='hidden' name='id' value={props.event._id} />
+            <input type="hidden" name='_csrf' value={props.csrf} />
+            <input type='submit' value="Post"/>
+        </form>
     );
 };
 
@@ -50,8 +104,18 @@ const setup = function(setupData) {
                 document.getElementById('greeting')
             );
             ReactDOM.render(
-                <Event csrf={setupData.csrfToken} username={user.username} event={result} />,
+                <Event csrf={setupData.csrfToken} username={user.username} event={result}>
+                    <Comments csrf={setup.csrfToken} event={result} />
+                </Event>,
                 document.getElementById('event')
+            );
+            ReactDOM.render(
+                <Comments csrf={setupData.csrfToken} event={result} username={user.username}/>,
+                document.getElementById('comments')
+            );
+            ReactDOM.render(
+                <AddComment csrf={setupData.csrfToken} event={result} />,
+                document.getElementById('addcomment')
             );
         });
     });

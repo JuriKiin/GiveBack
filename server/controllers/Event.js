@@ -250,6 +250,28 @@ const edit = (req, res) => {
   });
 };
 
+const comment = (req, res) => {
+  if (!req.body.comment) return res.status(400).json({ error: 'Valid comment required.' });
+  else if (!req.body.id) return res.status(400).json({ error: 'Valid event ID required.' });
+
+  return Event.EventModel.findById(req.body.id, (err, doc) => {
+    if (err) return res.status(400).json({ error: err });
+
+    const event = doc;
+
+    const newComment = {
+      username: req.session.account.username,
+      time: new Date().toLocaleString(),
+      comment: req.body.comment,
+    };
+    const tempComments = event.comments.concat([newComment]);
+    event.comments = tempComments;
+    return event.save()
+      .then(() => res.json({ message: 'Comment Posted.' }))
+      .catch((e) => res.status(400).json({ error: e }));
+  });
+};
+
 module.exports.home = home;
 module.exports.getEvents = getEvents;
 module.exports.create = create;
@@ -258,4 +280,5 @@ module.exports.delete = deleteEvent;
 module.exports.edit = edit;
 module.exports.eventPage = eventPage;
 module.exports.event = getEventById;
+module.exports.comment = comment;
 

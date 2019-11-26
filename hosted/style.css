@@ -229,6 +229,35 @@ a{
     box-shadow: var(--box-shadow);
     font-family: var(--text-font);
 }
+
+.eventPage {
+    width:80%;
+    display: grid;
+    grid-template-columns: 30% 70%;
+    grid-template-areas: 
+        "title ."
+        "register ."
+        "date ."
+        "address ."
+        "desc desc";
+    margin: 5% 10%;
+    font-family: var(--text-font);
+}
+.eventPage > * {
+    padding-left: 50px;
+    font-size: 15pt;
+}
+.eventPage h1 {
+    font-size: 25pt;
+}
+.eventPage img {
+    width:20px;
+    height: 20px;
+}
+.eventPage .eventDesc {
+    text-align: left;
+}
+
 .event {
     background-color: #ffffff;
 }
@@ -274,6 +303,9 @@ a{
 
 .eventDate{
     grid-area: date;
+}
+.eventAddress{
+    grid-area: address;
 }
 .eventDesc{
     grid-area: desc;
@@ -329,7 +361,7 @@ a{
 }
 
 .buttonGoing {
-    background-color: rgb(93, 216, 77);
+    background-color: #5dd84d;
     color:black;
 }
 .buttonRegister {
@@ -540,4 +572,64 @@ a{
     border-radius: 50%;
     display: inline-block;
     position: relative;
+}
+
+/* ---------- Comment ---------- */
+.comments{
+    margin: 0 10%;
+}
+
+.comment {
+    width:100%;
+    display: grid;
+    grid-template-rows: 25px;
+    grid-template-areas: 
+        "user"
+        "message";
+    margin: 15px 0;
+    background-color: #dfdfdf;
+    border-radius: 10px;
+}
+.comment_user, .comment_user_organizer, .comment_user_attendee{
+    font-family: var(--text-font);
+    grid-area: user;
+    padding-left: 25px;
+}
+.comment_user_organizer{
+    color: rgb(33, 107, 219);
+}
+.comment_user_attendee{
+    color: #39a12b;
+}
+.comment_message {
+    padding-left: 25px;
+}
+
+/* ---------- Comment Form ---------- */
+#addComment{
+    margin: 0 10% 5% 10%;
+}
+
+#commentForm textarea {
+    height:50px;
+    width: 85%;
+    float:left;
+    border-radius: 10px;
+    padding: 15px;
+    border:none;
+    resize: none;
+}
+#commentForm input[type="submit"] {
+    margin-left: 5%;
+    width: 10%;
+    height:50px;
+    border:none;
+    background-color: #e05050;
+    color:white;
+    padding: 0 25px;
+    cursor:pointer;
+    transition: all .25s ease-in-out;
+}
+#commentForm input[type="submit"]:hover{
+    border-radius: 15px;
 }

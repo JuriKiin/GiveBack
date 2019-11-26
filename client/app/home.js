@@ -95,7 +95,7 @@ const EventList = (props) => {
             <div key={event._id} className={eventClass}>
                 <img src='/assets/img/eventIcon.png' alt='event' className='eventImage' />
                 <h1 onClick={loadEvent.bind(this,event._id)}>{event.name}</h1>
-                <p className='eventDate'>{dateTimeText}</p>
+                <p className='eventDate'>{dateTimeText} - {event.address}</p>
                 <p className='eventDesc'>{event.desc}</p>
                 <p className='eventComments'>{event.comments.length} comments</p>
                 <p className='eventGoing'>{event.attendees.length} people going</p>

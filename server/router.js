@@ -11,6 +11,8 @@ const router = (app) => {
   app.get('/events', mid.requiresLogin, controllers.Event.getEvents);
   app.get('/viewEvent', mid.requiresLogin, controllers.Event.eventPage);
   app.get('/event', mid.requiresLogin, controllers.Event.event);
+
+  app.post('/comment', mid.requiresLogin, controllers.Event.comment);
   app.post('/password', mid.requiresLogin, controllers.Account.changePassword);
   app.post('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.login);
   app.post('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signup);

@@ -122,7 +122,9 @@ var EventList = function EventList(props) {
             React.createElement(
                 'p',
                 { className: 'eventDate' },
-                dateTimeText
+                dateTimeText,
+                ' - ',
+                event.address
             ),
             React.createElement(
                 'p',
