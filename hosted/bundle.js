@@ -182,6 +182,7 @@ var Upcoming = function Upcoming(props) {
     }
     var events = props.events.map(function (event) {
         var dateText = event.date.substring(0, event.date.indexOf('T'));
+        var dateTimeText = dateText + ' | ' + event.time;
         return React.createElement(
             'div',
             { key: event._id, className: 'upcomingEvent' },
@@ -193,7 +194,7 @@ var Upcoming = function Upcoming(props) {
             React.createElement(
                 'h2',
                 null,
-                dateText
+                dateTimeText
             ),
             React.createElement(
                 'button',

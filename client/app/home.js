@@ -127,10 +127,11 @@ const Upcoming = (props) => {
     }
     const events = props.events.map((event) => {
         let dateText = event.date.substring(0,event.date.indexOf('T'));
+        let dateTimeText = `${dateText} | ${event.time}`;
         return (
             <div key={event._id} className='upcomingEvent'>
                 <h1>{event.name}</h1>
-                <h2>{dateText}</h2>
+                <h2>{dateTimeText}</h2>
                 <button className="genericButton" onClick={register.bind(this,event).bind(this,props.csrf).bind(this,props.username)}>Unregister</button>
             </div>
         );
