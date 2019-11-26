@@ -31,6 +31,7 @@
   "author": "Juri Kiin",
   "license": "Apache 2.0",
   "dependencies": {
+    "async": "^3.1.0",
     "body-parser": "^1.15.0",
     "compression": "^1.6.1",
     "connect-redis": "^3.0.2",
