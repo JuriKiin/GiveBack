@@ -20,6 +20,22 @@ const logout = (req, res) => {
   res.redirect('/');  // Bring us back to login screen.
 };
 
+const pushNotification = (req, res, user, message, eventId) =>
+  Account.AccountModel.findByUsername(user, (err, doc) => {
+    if (err) return res.status(400).json({ error: err });
+    const notif = {
+      message,
+      createdAt: Date.now,
+      event: eventId,
+    };
+    return Account.AccountModel.updateOne(
+      { _id: doc._id },
+      { $push: { notifications: [notif] } },
+      () => {
+      }
+    );
+  });
+
 const login = (req, res) => {
   const rq = req;
   const rs = res;
@@ -101,6 +117,7 @@ const getUser = (req, res) =>
       username: doc.username,
       events: doc.events,
       createdEvents: doc.createdEvents,
+      notifications: doc.notifications,
     });
   });
 
@@ -157,3 +174,4 @@ module.exports.getUser = getUser;
 module.exports.notFound = notFound;
 module.exports.changePassword = changePassword;
 module.exports.delete = deleteAccount;
+module.exports.pushNotification = pushNotification;

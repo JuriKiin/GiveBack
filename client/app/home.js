@@ -186,6 +186,7 @@ const search = (e) => {
 const setup = function(csrf) {
     let username = '';
     sendAjax('GET', '/user', null, (data) => {
+        console.log(data);
         username = data.username;
         ReactDOM.render(
             <Greeting csrf={csrf} username={username}/>,

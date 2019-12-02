@@ -30,6 +30,9 @@ const AccountSchema = new mongoose.Schema({
   createdEvents: {
     type: [],
   },
+  notifications: {
+    type: [],
+  },
   createdDate: {
     type: Date,
     default: Date.now,

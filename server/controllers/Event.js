@@ -1,6 +1,8 @@
 const models = require('../models');    // Import all models
+const controllers = require('../controllers');  // Import all controllers
 const Event = models.Event;
 const Account = models.Account;
+const ActCtrl = controllers.Account;
 
 const home = (req, res) => res.render('app', { csrfToken: req.csrfToken() });
 
@@ -151,6 +153,10 @@ const register = (req, res) => {
         // Add the username to the attendees list.
         const attendees = event.attendees.concat([req.session.account.username]);
         event.attendees = attendees;
+        //Send a notification to the author.
+        ActCtrl.pushNotification(req, res, a,
+          `${req.session.account.username} registered for: ${event.name}`,
+          event._id);
       }
 
       return user.save().then(() => {
@@ -178,11 +184,19 @@ const deleteEvent = (req, res) => {
 
       // Only let user delete if they made it
       if (user.username === eventDoc.createdBy) {
+        let tempAttendees = eventDoc.attendees;
         return Event.EventModel.updateMany(
           { _id: eventDoc._id },
           { $set: { attendees: [] } },
           (err) => {
             if (err) return res.status(400).json({ error: err });
+            //Send a notification to all attendees that user cancelled the event.
+            tempAttendees.forEach((a) => {
+              ActCtrl.pushNotification(req, res, a,
+                `${req.session.account.username} cancelled ${eventDoc.name}`,
+                eventDoc._id);
+            });
+
             return Account.AccountModel.updateOne(
               { _id: user._id },
               { $pull: { createdEvents: { $in: [eventDoc._id] } } },
@@ -224,7 +238,16 @@ const edit = (req, res) => {
       event.address = req.body.address;
       event.date = req.body.date;
       event.desc = req.body.desc;
-      return event.save().then(() => res.json({ redirect: '/profile', message: 'Event Updated.' }))
+
+      return event.save().then(() => {
+        // Send a notification to each attendee.
+        event.attendees.forEach((a) => {
+          ActCtrl.pushNotification(req, res, a,
+            `${req.session.account.username} updated ${event.name}`,
+            event._id);
+        });
+        return res.json({ redirect: '/profile', message: 'Event Updated.' });
+      })
       .catch((err) => res.json({ redirect: '/profile', error: err }));
     });
   });
@@ -244,11 +267,17 @@ const comment = (req, res) => {
       time: new Date().toLocaleString(),
       comment: req.body.comment,
     };
-    const tempComments = event.comments.concat([newComment]);
-    event.comments = tempComments;
-    return event.save()
-      .then(() => res.json({ message: 'Comment Posted.' }))
-      .catch((e) => res.status(400).json({ error: e }));
+    return Event.EventModel.updateOne(
+      { _id: req.body.id },
+      { $push: { comments: newComment } },
+      (e) => {
+        if (e) return res.status(400).json({ error: e });
+        ActCtrl.pushNotification(req, res, event.createdBy,
+          `${req.session.account.username} commented on your event: ${event.name}`,
+          event._id);
+        return res.json({ message: 'Comment Posted.' });
+      }
+    );
   });
 };
 
