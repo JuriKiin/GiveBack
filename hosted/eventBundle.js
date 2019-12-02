@@ -246,7 +246,13 @@ var loadEvent = function loadEvent(id) {
 };
 
 var toggleNotificationList = function toggleNotificationList() {
-    if ($('#notifications').css('display') === 'none') $('#notifications').css('display', 'initial');else $('#notifications').css('display', 'none');
+    console.log("TEST");
+    if ($('#notifications').css('display') === 'none') {
+        sendAjax('GET', '/notifications', null, function (d) {
+            ReactDOM.render(React.createElement(NotificationList, { notifications: d }), document.getElementById('notifications'));
+            $('#notifications').css('display', 'initial');
+        });
+    } else $('#notifications').css('display', 'none');
 };
 
 var clearNotifications = function clearNotifications() {
@@ -263,10 +269,13 @@ var NotificationList = function NotificationList(props) {
             "Nothing new."
         );
     }
+
     var notifs = props.notifications.map(function (n) {
+        var dateText = n.createdAt.substring(0, n.createdAt.indexOf('T'));
+        var dateTimeText = dateText + " | " + n.createdAt.substring(11, n.createdAt.indexOf('Z') - 7);
         return React.createElement(
             "div",
-            { onClick: loadEvent.bind(undefined, n.eventId) },
+            { className: "notification", onClick: loadEvent.bind(undefined, n.event) },
             React.createElement(
                 "h1",
                 null,
@@ -275,7 +284,7 @@ var NotificationList = function NotificationList(props) {
             React.createElement(
                 "p",
                 null,
-                n.createdAt
+                dateTimeText
             )
         );
     });

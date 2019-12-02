@@ -152,7 +152,7 @@ const pushNotification = (req, res, user, message, eventId) =>
   Account.AccountModel.findByUsername(user, (err, doc) => {
     if (err) return res.status(400).json({ error: err });
     const notif = {
-      message: message,
+      message,
       createdAt: new Date(),
       event: eventId,
     };
@@ -175,7 +175,7 @@ const clearNotifications = (req, res) => Account.AccountModel.updateOne(
     { $set: { notifications: [] } },
     (err) => {
       if (err) return res.status(400).json({ error: err });
-      return res.json({message: "Notifications cleared."});
+      return res.json({ message: 'Notifications cleared.' });
     }
   );
 

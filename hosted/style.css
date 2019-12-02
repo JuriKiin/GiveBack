@@ -565,15 +565,52 @@ a{
     width:40px;
     height:40px;
 }
-#bellDot { 
-    height: 10px;
-    width: 10px;
-    margin-left:-10px;
-    background-color: #FFF400;
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
+
+#notifications{
+    max-width: 250px;
+
+    display: none;
+    position: absolute;
+    top:65px;
+    right: 20%;
+    background-color: #ffffff;
+    box-shadow: var(--box-shadow);
+    padding: 25px;
+    max-height: 250px;
+    overflow: scroll;
 }
+.notification{
+    padding: 10px;
+    font-family: var(--text-font);
+    border-bottom: 1px solid black;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+}
+.notification:hover{
+    background-color: #f3f3f3;
+}
+.notification h1{
+    font-size: 12pt;
+}
+.notification p{
+    font-size: 10pt;
+}
+#notifications button{
+    margin-top:10px;
+    margin-left: 80%;
+    width:20%;
+    border:none;
+    background-color: #D04656;
+    color:white;
+    padding: 5px;
+    font-family: var(--text-font);
+    transition: all .2s ease-in-out;
+}
+#notifications button:hover{
+    background-color: black;
+    border-radius: 40px;
+}
+
 
 /* ---------- Comment ---------- */
 .comments{

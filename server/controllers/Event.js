@@ -237,6 +237,7 @@ const edit = (req, res) => {
       event.name = req.body.name;
       event.address = req.body.address;
       event.date = req.body.date;
+      event.time = req.body.time;
       event.desc = req.body.desc;
 
       return event.save().then(() => {

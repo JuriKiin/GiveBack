@@ -17,6 +17,9 @@
     <span id='greeting' class='font-header font-sm margin-left-5 bold'></span>
     <a class='' href='/login'><img src='/assets/img/logo.png' alt='logo' width="50" height="50" /></a>
     <ul class='list-clear'>
+      <li class='d-inline pad-left-10 pad-right-5' id='nav1' onclick="toggleNotificationList()">
+        <img class='notificationBell pointer' src='/assets/img/bell.png'>
+      </li>
       <li class='d-inline pad-left-10 pad-right-10 nav-item'><a href='/home'>Home</a></li>
       <li class='d-inline nav-item'><a href='/logout'>Logout</a></li>
     </ul>
@@ -36,7 +39,7 @@
   </section>
 
   <section id='createModal'></section>
-
+  <section id='notifications'></section>
   <div id='modalBG'></div>
   <div id="snackbar"></div>
   <script src="/assets/profileBundle.js"></script>

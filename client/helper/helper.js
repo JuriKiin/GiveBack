@@ -43,7 +43,16 @@ const loadEvent = (id) => {
 };
 
 const toggleNotificationList = () => {
-    if($('#notifications').css('display') === 'none') $('#notifications').css('display', 'initial');
+    console.log("TEST");
+    if($('#notifications').css('display') === 'none'){
+        sendAjax('GET', '/notifications', null, (d) => {
+            ReactDOM.render(
+                <NotificationList notifications={d}/>,
+                document.getElementById('notifications')
+            );
+            $('#notifications').css('display', 'initial');
+        });
+    }
     else $('#notifications').css('display', 'none');
 };
 
@@ -54,7 +63,6 @@ const clearNotifications = () => {
 }
 
 const NotificationList = (props) => {
-    console.log(props);
     if(props.notifications.length === 0) {
         return (
             <div>Nothing new.</div>
@@ -62,10 +70,12 @@ const NotificationList = (props) => {
     }
     
     const notifs = props.notifications.map((n) => {
+        let dateText = n.createdAt.substring(0,n.createdAt.indexOf('T'));
+        let dateTimeText = `${dateText} | ${n.createdAt.substring(11,n.createdAt.indexOf('Z')-7)}`;
         return (
-            <div onClick={loadEvent.bind(this,n.event)}>
+            <div className="notification" onClick={loadEvent.bind(this,n.event)}>
                 <h1>{n.message}</h1>
-                <p>{n.createdAt}</p>
+                <p>{dateTimeText}</p>
             </div>
         );
     });

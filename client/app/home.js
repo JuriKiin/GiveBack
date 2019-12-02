@@ -187,13 +187,7 @@ const setup = function(csrf) {
             <Greeting csrf={csrf} username={username}/>,
             document.getElementById('greeting')
         );
-        sendAjax('GET', '/notifications', null, (d) => {
-            ReactDOM.render(
-                <NotificationList notifications={d}/>,
-                document.getElementById('notifications')
-            );
-            loadEvents(csrf, username);
-        });
+        loadEvents(csrf, username);
     });
 };
 

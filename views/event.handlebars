@@ -17,6 +17,9 @@
     <span id='greeting' class='font-header font-sm margin-left-5 bold'></span>
     <a class='' href='/login'><img src='/assets/img/logo.png' alt='logo' width="50" height="50" /></a>
     <ul class='list-clear'>
+      <li class='d-inline pad-left-10 pad-right-5' id='nav1' onclick="toggleNotificationList()">
+        <img class='notificationBell pointer' src='/assets/img/bell.png'>
+      </li>
       <li class='d-inline pad-left-10 pad-right-10 nav-item'><a href='/home'>Home</a></li>
       <li class='d-inline pad-left-10 pad-right-10 nav-item' id='nav1'><a href='/profile'>Profile</a></li>
       <li class='d-inline nav-item'><a href='/logout'>Logout</a></li>
@@ -29,6 +32,7 @@
   <div id='comments'></div>
   <div id='addcomment'></div>
   <div id="snackbar"></div>
+  <section id='notifications'></section>
   <input type='hidden' value={{event}} id='id'/>
   <script src="/assets/eventBundle.js"></script>
 </body>
