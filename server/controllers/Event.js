@@ -178,7 +178,6 @@ const deleteEvent = (req, res) => {
 
       // Only let user delete if they made it
       if (user.username === eventDoc.createdBy) {
-        // Save the attendees and ID so we can use after we delete the event
         return Event.EventModel.updateMany(
           { _id: eventDoc._id },
           { $set: { attendees: [] } },
