@@ -179,40 +179,21 @@ const deleteEvent = (req, res) => {
       // Only let user delete if they made it
       if (user.username === eventDoc.createdBy) {
         // Save the attendees and ID so we can use after we delete the event
-        const attendees = eventDoc.attendees.filter(Boolean);
-        const id = eventDoc._id;
-        // Delete the event
-        return Event.EventModel.deleteOne({ _id: eventDoc._id }, () => {
-          // Upon completion of deleting the event,
-          // Remove the event from the users createdEvents list
-          if (user.createdEvents.includes(id.toString())) {
-            const temp = user.createdEvents.filter(e => e !== id.toString());
-            user.createdEvents = temp;
+        return Event.EventModel.updateMany(
+          { _id: eventDoc._id },
+          { $set: { attendees: [] } },
+          (err) => {
+            if (err) return res.status(400).json({ error: err });
+            return Account.AccountModel.updateOne(
+              { _id: user._id },
+              { $pull: { createdEvents: { $in: [eventDoc._id] } } },
+              () => Event.EventModel.deleteOne({ _id: eventDoc._id }, () =>
+                res.json({ message: 'Deleted Successfully' }))
+            );
           }
-
-          // Re-save the user
-          user.save().then(() => {
-            // Once the user is re-saved
-            // Loop through the attendees to remove the event from their
-            // Events list
-
-            for (let i = 0; i < attendees.length; i++) {
-              // Find the user
-              Account.AccountModel.findByUsername(attendees[i], (err, doc) => {
-                if (err) return res.json({ error: err });
-                const tempUser = doc;
-                if (tempUser.events.includes(id.toString())) {
-                  const temp = tempUser.events.filter(e => e !== id.toString());
-                  tempUser.events = temp;
-                }
-                return tempUser.save();
-              });
-            }
-          }).catch((err) => res.json({ error: err }));
-          return res.json({ message: 'Deleted Successfully' });
-        });
+        );
       }
-      return res.json({ error: 'Event not associated with this account.' });
+      return res.status(400).json({ message: 'Access Denied' });
     });
   });
 };
