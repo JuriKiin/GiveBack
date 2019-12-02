@@ -153,8 +153,8 @@ const register = (req, res) => {
         // Add the username to the attendees list.
         const attendees = event.attendees.concat([req.session.account.username]);
         event.attendees = attendees;
-        //Send a notification to the author.
-        ActCtrl.pushNotification(req, res, a,
+        // Send a notification to the author.
+        ActCtrl.pushNotification(req, res, event.createdBy,
           `${req.session.account.username} registered for: ${event.name}`,
           event._id);
       }
@@ -184,13 +184,13 @@ const deleteEvent = (req, res) => {
 
       // Only let user delete if they made it
       if (user.username === eventDoc.createdBy) {
-        let tempAttendees = eventDoc.attendees;
+        const tempAttendees = eventDoc.attendees;
         return Event.EventModel.updateMany(
           { _id: eventDoc._id },
           { $set: { attendees: [] } },
           (err) => {
             if (err) return res.status(400).json({ error: err });
-            //Send a notification to all attendees that user cancelled the event.
+            // Send a notification to all attendees that user cancelled the event.
             tempAttendees.forEach((a) => {
               ActCtrl.pushNotification(req, res, a,
                 `${req.session.account.username} cancelled ${eventDoc.name}`,
