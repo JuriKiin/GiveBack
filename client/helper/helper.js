@@ -36,5 +36,44 @@ const close = (id) => {
         overflow: 'auto',
         height: 'auto'
     });
+};
 
+const loadEvent = (id) => {
+    location.href = '/viewEvent?id='+id;
+};
+
+const toggleNotificationList = () => {
+    if($('#notifications').css('display') === 'none') $('#notifications').css('display', 'initial');
+    else $('#notifications').css('display', 'none');
+};
+
+const clearNotifications = () => {
+    sendAjax('GET', '/clearNotifications', null, () => {
+        toggleNotificationList();
+    });
+}
+
+const NotificationList = (props) => {
+    console.log(props);
+    if(props.notifications.length === 0) {
+        return (
+            <div>Nothing new.</div>
+        );
+    }
+    
+    const notifs = props.notifications.map((n) => {
+        return (
+            <div onClick={loadEvent.bind(this,n.event)}>
+                <h1>{n.message}</h1>
+                <p>{n.createdAt}</p>
+            </div>
+        );
+    });
+
+    return (
+        <div>
+            {notifs}
+            <button onClick={clearNotifications}>Clear</button>
+        </div>
+    );
 };

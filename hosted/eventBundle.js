@@ -240,3 +240,54 @@ var close = function close(id) {
         height: 'auto'
     });
 };
+
+var loadEvent = function loadEvent(id) {
+    location.href = '/viewEvent?id=' + id;
+};
+
+var toggleNotificationList = function toggleNotificationList() {
+    if ($('#notifications').css('display') === 'none') $('#notifications').css('display', 'initial');else $('#notifications').css('display', 'none');
+};
+
+var clearNotifications = function clearNotifications() {
+    sendAjax('GET', '/clearNotifications', null, function () {
+        toggleNotificationList();
+    });
+};
+
+var NotificationList = function NotificationList(props) {
+    if (props.notifications.length === 0) {
+        return React.createElement(
+            "div",
+            null,
+            "Nothing new."
+        );
+    }
+    var notifs = props.notifications.map(function (n) {
+        return React.createElement(
+            "div",
+            { onClick: loadEvent.bind(undefined, n.eventId) },
+            React.createElement(
+                "h1",
+                null,
+                n.message
+            ),
+            React.createElement(
+                "p",
+                null,
+                n.createdAt
+            )
+        );
+    });
+
+    return React.createElement(
+        "div",
+        null,
+        notifs,
+        React.createElement(
+            "button",
+            { onClick: clearNotifications },
+            "Clear"
+        )
+    );
+};

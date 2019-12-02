@@ -159,10 +159,6 @@ var EventList = function EventList(props) {
     );
 };
 
-var loadEvent = function loadEvent(id) {
-    location.href = '/viewEvent?id=' + id;
-};
-
 var Upcoming = function Upcoming(props) {
     if (props.events.length === 0) {
         return React.createElement(
@@ -251,7 +247,10 @@ var setup = function setup(csrf) {
     sendAjax('GET', '/user', null, function (data) {
         username = data.username;
         ReactDOM.render(React.createElement(Greeting, { csrf: csrf, username: username }), document.getElementById('greeting'));
-        loadEvents(csrf, username);
+        sendAjax('GET', '/notifications', null, function (d) {
+            ReactDOM.render(React.createElement(NotificationList, { notifications: d }), document.getElementById('notifications'));
+            loadEvents(csrf, username);
+        });
     });
 };
 
@@ -306,4 +305,57 @@ var close = function close(id) {
         overflow: 'auto',
         height: 'auto'
     });
+};
+
+var loadEvent = function loadEvent(id) {
+    location.href = '/viewEvent?id=' + id;
+};
+
+var toggleNotificationList = function toggleNotificationList() {
+    if ($('#notifications').css('display') === 'none') $('#notifications').css('display', 'initial');else $('#notifications').css('display', 'none');
+};
+
+var clearNotifications = function clearNotifications() {
+    sendAjax('GET', '/clearNotifications', null, function () {
+        toggleNotificationList();
+    });
+};
+
+var NotificationList = function NotificationList(props) {
+    console.log(props);
+    if (props.notifications.length === 0) {
+        return React.createElement(
+            "div",
+            null,
+            "Nothing new."
+        );
+    }
+
+    var notifs = props.notifications.map(function (n) {
+        return React.createElement(
+            "div",
+            { onClick: loadEvent.bind(undefined, n.event) },
+            React.createElement(
+                "h1",
+                null,
+                n.message
+            ),
+            React.createElement(
+                "p",
+                null,
+                n.createdAt
+            )
+        );
+    });
+
+    return React.createElement(
+        "div",
+        null,
+        notifs,
+        React.createElement(
+            "button",
+            { onClick: clearNotifications },
+            "Clear"
+        )
+    );
 };

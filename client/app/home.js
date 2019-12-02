@@ -111,10 +111,6 @@ const EventList = (props) => {
     );
 };
 
-const loadEvent = (id) => {
-    location.href = '/viewEvent?id='+id;
-};
-
 const Upcoming = (props) => {
     if(props.events.length === 0) {
         return (
@@ -186,13 +182,18 @@ const search = (e) => {
 const setup = function(csrf) {
     let username = '';
     sendAjax('GET', '/user', null, (data) => {
-        console.log(data);
         username = data.username;
         ReactDOM.render(
             <Greeting csrf={csrf} username={username}/>,
             document.getElementById('greeting')
         );
-        loadEvents(csrf, username);
+        sendAjax('GET', '/notifications', null, (d) => {
+            ReactDOM.render(
+                <NotificationList notifications={d}/>,
+                document.getElementById('notifications')
+            );
+            loadEvents(csrf, username);
+        });
     });
 };
 

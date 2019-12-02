@@ -20,22 +20,6 @@ const logout = (req, res) => {
   res.redirect('/');  // Bring us back to login screen.
 };
 
-const pushNotification = (req, res, user, message, eventId) =>
-  Account.AccountModel.findByUsername(user, (err, doc) => {
-    if (err) return res.status(400).json({ error: err });
-    const notif = {
-      message,
-      createdAt: Date.now,
-      event: eventId,
-    };
-    return Account.AccountModel.updateOne(
-      { _id: doc._id },
-      { $push: { notifications: [notif] } },
-      () => {
-      }
-    );
-  });
-
 const login = (req, res) => {
   const rq = req;
   const rs = res;
@@ -163,6 +147,38 @@ const deleteAccount = (req, res) => {
   });
 };
 
+// Helper function for pushing a notification to a user.
+const pushNotification = (req, res, user, message, eventId) =>
+  Account.AccountModel.findByUsername(user, (err, doc) => {
+    if (err) return res.status(400).json({ error: err });
+    const notif = {
+      message: message,
+      createdAt: new Date(),
+      event: eventId,
+    };
+    return Account.AccountModel.updateOne(
+      { _id: doc._id },
+      { $push: { notifications: notif } },
+      () => {
+      }
+    );
+  });
+
+const getNotifications = (req, res) =>
+  Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+    if (err) return res.status(400).json({ error: err });
+    return res.json(doc.notifications);
+  });
+
+const clearNotifications = (req, res) => Account.AccountModel.updateOne(
+    { _id: req.session.account._id },
+    { $set: { notifications: [] } },
+    (err) => {
+      if (err) return res.status(400).json({ error: err });
+      return res.json({message: "Notifications cleared."});
+    }
+  );
+
 
 module.exports.profilePage = profilePage;
 module.exports.loginPage = loginPage;
@@ -175,3 +191,5 @@ module.exports.notFound = notFound;
 module.exports.changePassword = changePassword;
 module.exports.delete = deleteAccount;
 module.exports.pushNotification = pushNotification;
+module.exports.getNotifications = getNotifications;
+module.exports.clearNotifications = clearNotifications;
