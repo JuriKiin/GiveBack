@@ -1,5 +1,4 @@
 const models = require('../models');    // Import all models
-const async = require('async');
 
 const Account = models.Account;
 const Event = models.Event;
@@ -115,72 +114,36 @@ const getToken = (request, response) => {
 };
 
 const deleteAccount = (req, res) => {
-  Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
-    if (err) return res.status(400).json({ error: err });
+  Account.AccountModel.findByUsername(req.session.account.username, (userError, doc) => {
+    if (userError) return res.status(400).json({ error: userError });
+    if (doc.username !== req.session.account.username) {
+      return res.status(500).json({ error: "You can't do that!" });
+    }
     const user = doc;
-    const events = user.events;
-    const createdEvents = user.createdEvents;
 
-    // Find each event we registered for
-    return Event.EventModel.find({ _id: {
-      $in: events } }, (eventError, eventDocs) => {
-      if (eventError) return res.status(400).json({ error: eventError });
-        // For each event, remove our name from the attendee list
-      const eSave = [];
-      eventDocs.forEach(e => {
-        const event = e;
-        if (event.attendees.includes(req.session.account.username)) {
-          const temp = event.attendees.filter(a => a !== req.session.account.username.toString());
-          event.attendees = temp;
-          eSave.push(event);
-        }
-      });
-
-        // Batch save each event
-      return async.eachSeries(eSave, (e) => {
-        console.log('Saving!');
-        return e.save();
-      }, (sErr) => {
-        if (sErr) return res.status(400).json({ error: sErr });
-        //We're done unregistering for our events, now delete ours.
-        return async.eachSeries(createdEvents, (ce) => {
-          console.log(`Deleting! ${ce}`);
-          let tempReq = req;
-          tempReq.body = {
-            _id: ce._id,
-          };
-          Event.delete(tempReq, res);
-        }, (ceErr) => {
-          if(ceErr) return res.status(400).json({error: ceErr});
-
-          //Lastly, delete our account and logout
-
-        });
-      });
-    });
+    // Unregister for all of our events
+    return Event.EventModel.updateMany(
+      {},
+      { $pull: { attendees: { $in: [req.session.account.username] } } },
+      (err) => {
+        if (err) return res.status(400).json({ error: err });
+        // Make everyone attending our events to unregister for the event.
+        return Event.EventModel.updateMany(
+          { createdBy: user.username },
+          { $set: { attendees: [] } },
+          (aErr) => {
+            if (aErr) return res.status(400).json({ error: aErr });
+            // Delete every event we've made
+            return Event.EventModel.deleteMany({ createdBy: doc.username }, () =>
+              Account.AccountModel.deleteOne({ _id: user._id }, () => {
+                req.session.destroy();
+                res.json({ redirect: '/' });
+              }));
+          }
+        );
+      }
+    );
   });
-
-    // return Account.AccountModel.find({ events: {
-    //   $in: createdEvents,
-    // } }, (userError, userDocs) => {
-    //   if (userError) return res.status(400).json({ error: userError });
-    //   const users = userDocs;
-    //   users.forEach(u => {
-    //     const tempUser = u;
-    //     for (let i = 0; i < createdEvents.length; i++) {
-    //       if (u.events.includes(createdEvents[i].toString())) {
-    //         const temp = u.events.filter(a => a !== createdEvents[i].toString());
-    //         tempUser.events = temp;
-    //         tempUser.save();
-    //       }
-    //     }
-    //   });
-    //   return Account.AccountModel.remove({ username: user.username },
-    //       () => {
-    //         console.log('DELETING');
-    //         res.json({ redirect: '/logout' });
-    //       });
-    // });
 };
 
 
