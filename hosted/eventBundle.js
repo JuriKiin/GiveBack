@@ -79,6 +79,9 @@ var Comments = function Comments(props) {
             title = '[Going]';
             userClass = 'comment_user_attendee';
         }
+        if (comment.username === props.username) {
+            title += ' [You]';
+        }
 
         return React.createElement(
             'div',
