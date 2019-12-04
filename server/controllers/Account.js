@@ -1,4 +1,6 @@
 const models = require('../models');    // Import all models
+const global = require('../controllers/Global');
+const consts = global.consts;
 
 const Account = models.Account;
 const Event = models.Event;
@@ -20,6 +22,7 @@ const logout = (req, res) => {
   res.redirect('/');  // Bring us back to login screen.
 };
 
+//This logs the user in.
 const login = (req, res) => {
   const rq = req;
   const rs = res;
@@ -27,14 +30,15 @@ const login = (req, res) => {
   const username = `${rq.body.username}`;
   const password = `${rq.body.pass}`;
 
-  if (!username || !password) return rs.status(400).json({ error: 'All fields are required' });
+  if (!username || !password) return rs.status(400).json({ error: consts.allFields });
   return Account.AccountModel.authenticate(username, password, (err, account) => {
-    if (err || !account) return rs.status(401).json({ error: 'Username or Password is incorrect' });
+    if (err || !account) return rs.status(401).json({ error: consts.wrongDetails });
     rq.session.account = Account.AccountModel.toAPI(account);
     return rs.json({ redirect: '/home' });
   });
 };
 
+//This creates a new user.
 const signup = (req, res) => {
   const rq = req;
   const rs = res;
@@ -42,10 +46,10 @@ const signup = (req, res) => {
   rq.body.pass = `${rq.body.pass}`;
   rq.body.pass2 = `${rq.body.pass2}`;
   if (!rq.body.username || !rq.body.pass || !rq.body.pass2) {
-    return rs.status(400).json({ error: 'All fields are required' });
+    return rs.status(400).json({ error: consts.allFields });
   }
   if (rq.body.pass !== rq.body.pass2) {
-    return rs.status(400).json({ error: 'Passwords do not match' });
+    return rs.status(400).json({ error: consts.noMatch });
   }
   return Account.AccountModel.generateHash(rq.body.pass, (salt, hash) => {
     const accountData = {
@@ -61,9 +65,9 @@ const signup = (req, res) => {
             })
             .catch((err) => {
               if (err.code === 11000) {
-                return rs.status(400).json({ error: 'This Username is already taken!' });
+                return rs.status(400).json({ error: consts.usernameTaken });
               }
-              return rs.status(400).json({ error: 'An error occured' });
+              return rs.status(400).json({ error: consts.error });
             });
   });
 };
@@ -72,11 +76,11 @@ const signup = (req, res) => {
 const changePassword = (req, res) => {
   // Check to see if we've provided password and password retyped
   if (!req.body.newPassword || !req.body.newPasswordAgain) {
-    return res.status(400).json({ error: 'All fields are required.' });
+    return res.status(400).json({ error: consts.allFields });
   }
   // Check to see if the passwords match
   if (req.body.newPassword !== req.body.newPasswordAgain) {
-    return res.status(400).json({ error: 'Passwords do not match' });
+    return res.status(400).json({ error: consts.noMatch });
   }
 
   // Get the user from the current session
@@ -88,7 +92,7 @@ const changePassword = (req, res) => {
       return Account.AccountModel.generateHash(req.body.newPassword, (salt, hash) => {
         user.salt = salt;
         user.password = hash;
-        return user.save().then(() => res.json({ message: 'Password Changed Successfully' }));
+        return user.save().then(() => res.json({ message: consts.passwordChanged }));
       });
     });
 };
@@ -96,7 +100,7 @@ const changePassword = (req, res) => {
 
 const getUser = (req, res) =>
   Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
-    if (err) return res.status(400).json({ error: 'Username not found' });
+    if (err) return res.status(400).json({ error: consts.usernameNotFound });
     return res.json({
       username: doc.username,
       events: doc.events,
@@ -105,6 +109,7 @@ const getUser = (req, res) =>
     });
   });
 
+//Get security token.
 const getToken = (request, response) => {
   const req = request;
   const res = response;
@@ -114,11 +119,12 @@ const getToken = (request, response) => {
   res.json(csrfToken);
 };
 
+//Delete user account.
 const deleteAccount = (req, res) => {
   Account.AccountModel.findByUsername(req.session.account.username, (userError, doc) => {
     if (userError) return res.status(400).json({ error: userError });
     if (doc.username !== req.session.account.username) {
-      return res.status(500).json({ error: "You can't do that!" });
+      return res.status(500).json({ error: consts.oops });
     }
     const user = doc;
 
@@ -164,20 +170,22 @@ const pushNotification = (req, res, user, message, eventId) =>
     );
   });
 
+//This gets all notifications for a given user.
 const getNotifications = (req, res) =>
   Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
     if (err) return res.status(400).json({ error: err });
     return res.json(doc.notifications);
   });
 
+//This clears the notifications for a given user.
 const clearNotifications = (req, res) => Account.AccountModel.updateOne(
-    { _id: req.session.account._id },
-    { $set: { notifications: [] } },
-    (err) => {
-      if (err) return res.status(400).json({ error: err });
-      return res.json({ message: 'Notifications cleared.' });
-    }
-  );
+  { _id: req.session.account._id },
+  { $set: { notifications: [] } },
+  (err) => {
+    if (err) return res.status(400).json({ error: err });
+    return res.json({ message: consts.clearNotifications });
+  }
+);
 
 
 module.exports.profilePage = profilePage;

@@ -3,11 +3,13 @@ const controllers = require('../controllers');  // Import all controllers
 const Event = models.Event;
 const Account = models.Account;
 const ActCtrl = controllers.Account;
+const global = require('../controllers/Global');
+const consts = global.consts;
 
 const home = (req, res) => res.render('app', { csrfToken: req.csrfToken() });
 
 const eventPage = (req, res) => {
-  if (!req.query.id) return res.status(400).json({ error: 'Invalid event.' });
+  if (!req.query.id) return res.status(400).json({ error: consts.invalidEvent });
   return Event.EventModel.findById(req.query.id, (err, doc) => {
     if (err) return res.status(400).json({ error: err });
     return res.render('event', {
@@ -17,13 +19,14 @@ const eventPage = (req, res) => {
 };
 
 const getEventById = (req, res) => {
-  if (!req.query.id) return res.status(400).json({ error: 'Invalid event.' });
+  if (!req.query.id) return res.status(400).json({ error: consts.invalidEvent });
   return Event.EventModel.findById(req.query.id, (err, doc) => {
     if (err) return res.status(400).json({ error: err });
     return res.json(doc);
   });
 };
 
+//Get events.
 const getEvents = (req, res) => {
   // If we pass in a username to the query, load events by user
   let limitSize = 0;
@@ -48,13 +51,13 @@ const getEvents = (req, res) => {
     }
   } else if (req.query.username) {
     Event.EventModel.find({ createdBy: req.query.username }, (err, docs) => {
-      if (err) return res.json({ error: 'No Events Found' });
+      if (err) return res.json({ error: consts.noEvents });
       returnDocs = returnDocs.concat(docs);
       return res.json({ events: returnDocs });
     });
   } else if (req.query.name) {
     Event.EventModel.find({ name: { $regex: req.query.name, $options: 'i' } }, (err, docs) => {
-      if (err) return res.json({ error: 'No Events Found' });
+      if (err) return res.json({ error: consts.noEvents });
       returnDocs = returnDocs.concat(docs);
       return res.json({ events: returnDocs });
     }).limit(limitSize);
@@ -89,7 +92,7 @@ const createEventFromReq = (body) =>
 const create = (req, res) => {
   if (!req.body.name || !req.body.date ||
       !req.body.address || !req.body.time || !req.body.desc) {
-    return res.status(400).json({ error: 'All fields are required' });
+    return res.status(400).json({ error: consts.allFields });
   }
 
   const event = createEventFromReq(req.body);
@@ -99,12 +102,12 @@ const create = (req, res) => {
   return newEvent.save()
     .then(() => {
       Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
-        if (err) return res.status(400).json({ error: 'Username not found' });
+        if (err) return res.status(400).json({ error: consts.usernameNotFound });
         const user = doc;
         const tempArr = user.createdEvents.concat([newEvent._id.toString()]);
         user.createdEvents = tempArr;
         return user.save().then(() => res.json({ redirect: '/home' })).catch(() => {
-          res.json({ message: 'Something went wrong' });
+          res.json({ message: consts.error });
         });
       });
     });
@@ -116,16 +119,16 @@ const create = (req, res) => {
 // 2) Find the event, and add the username to the list of attendees
 const register = (req, res) => {
   if (!req.body._id) {
-    return res.status(400).json({ error: 'Invalid Event ID' });
+    return res.status(400).json({ error: consts.invalidEvent });
   }
 
   // Find the user
   return Account.AccountModel.findByUsername(req.session.account.username, (error, userDoc) => {
-    if (error) return res.status(400).json({ error: 'User not found' });
+    if (error) return res.status(400).json({ error: consts.usernameNotFound });
 
     // Find the event
     return Event.EventModel.findById(req.body._id, (err, eventDoc) => {
-      if (err) return res.status(400).json({ error: 'Event not found' });
+      if (err) return res.status(400).json({ error: consts.invalidEvent });
 
       // Save the docs as variables.
       const user = userDoc;
@@ -173,14 +176,14 @@ const register = (req, res) => {
 
 // Delete an event
 const deleteEvent = (req, res) => {
-  if (!req.body._id) return res.status(400).json({ error: 'Invalid Event. Try Again.' });
+  if (!req.body._id) return res.status(400).json({ error: consts.invalidEvent });
 
   return Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
-    if (userError) return res.status(400).json({ error: 'Username not found' });
+    if (userError) return res.status(400).json({ error: consts.usernameNotFound });
     const user = userDoc;
 
     return Event.EventModel.findById(req.body._id, (eventError, eventDoc) => {
-      if (eventError) return res.json({ error: 'No event found.' });
+      if (eventError) return res.json({ error: consts.invalidEvent });
 
       // Only let user delete if they made it
       if (user.username === eventDoc.createdBy) {
@@ -201,19 +204,19 @@ const deleteEvent = (req, res) => {
               { _id: user._id },
               { $pull: { createdEvents: { $in: [eventDoc._id] } } },
               () => Event.EventModel.deleteOne({ _id: eventDoc._id }, () =>
-                res.json({ message: 'Deleted Successfully' }))
+                res.json({ message: consts.deleted }))
             );
           }
         );
       }
-      return res.status(400).json({ message: 'Access Denied' });
+      return res.status(400).json({ message: consts.oops });
     });
   });
 };
 
 // Edit an existing event
 const edit = (req, res) => {
-  if (!req.body._id) return res.status(400).json({ error: 'Invalid Event. Try Again.' });
+  if (!req.body._id) return res.status(400).json({ error: consts.invalidEvent });
 
   // Find user
   return Account.AccountModel.findByUsername(req.session.account.username, (userError, userDoc) => {
@@ -226,12 +229,12 @@ const edit = (req, res) => {
 
       // Check if our session's account is the same as the event's author (security)
       if (event.createdBy !== user.username) {
-        return res.json({ error: 'Event not associated with this account.' });
+        return res.json({ error: consts.invalidEvent });
       }
 
       // Make sure we have all valid fields
       if (!req.body.name || !req.body.address || !req.body.date || !req.body.desc) {
-        return res.json({ error: 'All fields are required' });
+        return res.json({ error: consts.allFields });
       }
 
       event.name = req.body.name;
@@ -255,8 +258,8 @@ const edit = (req, res) => {
 };
 
 const comment = (req, res) => {
-  if (!req.body.comment) return res.status(400).json({ error: 'Valid comment required.' });
-  else if (!req.body.id) return res.status(400).json({ error: 'Valid event ID required.' });
+  if (!req.body.comment) return res.status(400).json({ error: consts.validComment });
+  else if (!req.body.id) return res.status(400).json({ error: consts.invalidEvent });
 
   return Event.EventModel.findById(req.body.id, (err, doc) => {
     if (err) return res.status(400).json({ error: err });
@@ -276,7 +279,7 @@ const comment = (req, res) => {
         ActCtrl.pushNotification(req, res, event.createdBy,
           `${req.session.account.username} commented on your event: ${event.name}`,
           event._id);
-        return res.json({ message: 'Comment Posted.' });
+        return res.json({ message: consts.commented });
       }
     );
   });
